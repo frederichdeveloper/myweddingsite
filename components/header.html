@@ -10,12 +10,16 @@
     Il Nostro Matrimonio
     <span>26 · 07 · 2026</span>
   </a>
+
   <ul class="navbar-links" role="navigation" aria-label="Navigazione principale">
     <li><a href="index.html#cerimonia">Cerimonia</a></li>
     <li><a href="index.html#dresscode">Dress Code</a></li>
     <li><a href="index.html#location">Location</a></li>
     <li><a href="index.html#rsvp">CONFERMA</a></li>
+    <li><a href="tavoli.html">Tavoli</a></li>
+    <li><a href="#" id="admin-menu-trigger" class="admin-menu-trigger" style="display:none;">Admin</a></li>
   </ul>
+
   <!-- Hamburger (mobile) -->
   <button class="navbar-hamburger" id="nav-toggle" aria-label="Apri menu" aria-expanded="false">
     <span></span><span></span><span></span>
@@ -27,8 +31,75 @@
   <ul>
     <li><a href="index.html#cerimonia" class="mobile-link">🌊 Cerimonia</a></li>
     <li><a href="index.html#dresscode" class="mobile-link">✨ Dress Code</a></li>
-    <li><a href="index.html#location"  class="mobile-link">🚗 Location</a></li>
-    <li><a href="index.html#rsvp"      class="mobile-link" text-color="gold-light">💌 CONFERMA</a></li>
+    <li><a href="index.html#location" class="mobile-link">🚗 Location</a></li>
+    <li><a href="index.html#rsvp" class="mobile-link">💌 CONFERMA</a></li>
+    <li><a href="tavoli.html" class="mobile-link">🪑 Tavoli</a></li>
+    <li><a href="#" id="admin-menu-trigger-mobile" class="mobile-link" style="display:none;">🔐 Admin</a></li>
   </ul>
 </div>
 <div class="mobile-menu-overlay" id="mobile-overlay"></div>
+
+<script>
+(function(){
+  function isAdmin(){
+    try { return sessionStorage.getItem('site_role') === 'admin'; }
+    catch(e) { return false; }
+  }
+
+  function updateAdminLinks(){
+    var desktop = document.getElementById('admin-menu-trigger');
+    var mobile = document.getElementById('admin-menu-trigger-mobile');
+    if (desktop) desktop.style.display = isAdmin() ? '' : 'none';
+    if (mobile) mobile.style.display = isAdmin() ? '' : 'none';
+  }
+
+  updateAdminLinks();
+
+  window.addEventListener('storage', updateAdminLinks);
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t) return;
+
+    if (t.id === 'admin-menu-trigger' || t.id === 'admin-menu-trigger-mobile') {
+      e.preventDefault();
+
+      var role = sessionStorage.getItem('site_role');
+      if (role !== 'admin') return;
+
+      var pages = [
+        { name: 'Tavoli Admin', url: 'admin/admin-tavoli.html' }
+      ];
+
+      var overlay = document.createElement('div');
+      overlay.className = 'admin-pages-overlay';
+      overlay.innerHTML =
+        '<div class="admin-pages-modal">' +
+          '<div class="role-badge">Menu Admin</div>' +
+          '<h1 class="role-title">Pagine disponibili</h1>' +
+          '<div class="admin-pages-list"></div>' +
+          '<button class="role-btn role-cancel" id="close-admin-pages">CHIUDI</button>' +
+        '</div>';
+
+      document.body.appendChild(overlay);
+
+      var list = overlay.querySelector('.admin-pages-list');
+      pages.forEach(function(p){
+        var a = document.createElement('a');
+        a.href = p.url;
+        a.className = 'admin-page-link';
+        a.textContent = p.name;
+        list.appendChild(a);
+      });
+
+      overlay.querySelector('#close-admin-pages').addEventListener('click', function(){
+        overlay.remove();
+      });
+
+      overlay.addEventListener('click', function(ev){
+        if (ev.target === overlay) overlay.remove();
+      });
+    }
+  });
+})();
+</script>
