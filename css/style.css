@@ -732,3 +732,29 @@ html, body {
 @media (min-width: 860px) {
   .mobile-menu, .mobile-menu-overlay { display: none !important; }
 }
+
+/* ═══════════════════════════════════════════
+   FFECCIA SU
+═══════════════════════════════════════════ */
+
+#backToTop {
+  display: none; /* Nascosto di default */
+  position: fixed; /* Rimane fisso nello schermo */
+  bottom: 20px; /* Distanza dal fondo */
+  right: 20px; /* Distanza da destra */
+  z-index: 99; /* Rimane sopra agli altri elementi */
+  border: none;
+  outline: none;
+  background-color: #333; /* Colore di sfondo */
+  color: white; /* Colore della freccia */
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 50%; /* Lo rende rotondo */
+  font-size: 18px;
+  transform: rotate(-90deg); /* Ruota la freccia verso l'alto */
+  transition: background-color 0.3s;
+}
+
+#backToTop:hover {
+  background-color: #555; /* Colore quando ci passi sopra con il mouse */
+}
