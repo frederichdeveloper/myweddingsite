@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Tavoli · Matrimonio 26 Luglio 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Admin Layout ── */
+    .admin-login {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--aqua-deep);
+      padding: 24px;
+    }
+    .login-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .login-icon { font-size: 48px; margin-bottom: 16px; }
+    .login-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--aqua-deep);
+      margin-bottom: 6px;
+    }
+    .login-sub {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--aqua-light);
+      margin-bottom: 28px;
+    }
+    .login-field {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-dark);
+      background: var(--aqua-mist);
+      border: 2px solid var(--aqua-foam);
+      border-radius: 12px;
+      padding: 14px 18px;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .login-field:focus { border-color: var(--aqua-light); }
+    .login-btn {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-dark);
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(200,168,75,0.35);
+      transition: transform 0.15s;
+    }
+    .login-btn:active { transform: scale(0.98); }
+    .login-error {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: #c62828;
+      margin-top: 10px;
+      display: none;
+    }
+    .login-error.visible { display: block; }
+
+    /* ── Admin Panel ── */
+    .admin-panel { display: none; }
+    .admin-panel.visible { display: block; }
+
+    .admin-header {
+      background: linear-gradient(135deg, var(--aqua-deep), var(--aqua-mid));
+      padding: 32px 28px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .admin-header-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      font-weight: 600;
+      font-style: italic;
+      color: var(--white);
+    }
+    .admin-header-sub {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--aqua-pale);
+      margin-top: 2px;
+    }
+    .logout-btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dark);
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    /* Tabs */
+    .admin-tabs {
+      display: flex;
+      background: var(--aqua-mist);
+      border-bottom: 2px solid var(--aqua-foam);
+    }
+    .admin-tab {
+      flex: 1;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--aqua-light);
+      background: none;
+      border: none;
+      padding: 16px 8px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .admin-tab.active {
+      color: var(--aqua-deep);
+      border-bottom-color: var(--gold);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Tab: Ospiti ── */
+    .ospiti-section { padding: 24px 20px; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .section-head-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--aqua-deep);
+    }
+    .add-btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--aqua-mid);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-btn:hover { background: var(--aqua-deep); }
+
+    .add-guest-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .guest-input {
+      flex: 1;
+      min-width: 120px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-dark);
+      background: var(--aqua-mist);
+      border: 2px solid var(--aqua-foam);
+      border-radius: 10px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .guest-input:focus { border-color: var(--aqua-light); }
+
+    .guest-list { list-style: none; }
+    .guest-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      margin-bottom: 6px;
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid var(--aqua-foam);
+      box-shadow: 0 1px 4px rgba(10,79,92,0.05);
+    }
+    .guest-item-name {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--aqua-deep);
+    }
+    .guest-item-badge {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--aqua-mid);
+      border-radius: 50px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+    .guest-item-badge.unassigned {
+      background: #bdbdbd;
+    }
+    .guest-del-btn {
+      background: none;
+      border: none;
+      color: #ef9a9a;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      border-radius: 6px;
+      transition: color 0.15s;
+    }
+    .guest-del-btn:hover { color: #c62828; }
+
+    /* ── Tab: Tavoli ── */
+    .tavoli-admin-section { padding: 20px; }
+    .tavolo-admin-card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--aqua-foam);
+      box-shadow: 0 2px 8px rgba(10,79,92,0.06);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .tavolo-admin-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      cursor: pointer;
+      user-select: none;
+      background: var(--aqua-mist);
+      border-bottom: 1px solid var(--aqua-foam);
+    }
+    .tavolo-admin-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      flex-shrink: 0;
+    }
+    .tavolo-admin-name-wrap { flex: 1; }
+    .tavolo-admin-name-input {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--aqua-deep);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      outline: none;
+      width: 100%;
+      padding: 2px 0;
+      transition: border-color 0.2s;
+    }
+    .tavolo-admin-name-input:focus {
+      border-bottom-color: var(--gold);
+    }
+    .tavolo-admin-count {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: #8ab0b8;
+    }
+    .tavolo-toggle {
+      font-size: 18px;
+      color: var(--aqua-light);
+      transition: transform 0.2s;
+    }
+    .tavolo-admin-card.open .tavolo-toggle { transform: rotate(180deg); }
+
+    .tavolo-admin-body {
+      padding: 16px 18px;
+      display: none;
+    }
+    .tavolo-admin-card.open .tavolo-admin-body { display: block; }
+
+    .drop-zone {
+      min-height: 60px;
+      border: 2px dashed var(--aqua-foam);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .drop-zone.dragover {
+      border-color: var(--aqua-light);
+      background: var(--aqua-mist);
+    }
+    .drop-zone-hint {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: #b0cdd3;
+      text-align: center;
+      padding: 8px;
+      pointer-events: none;
+    }
+    .assigned-guest {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      background: var(--aqua-mist);
+      border-radius: 10px;
+      border: 1px solid var(--aqua-foam);
+      cursor: grab;
+    }
+    .assigned-guest:active { cursor: grabbing; }
+    .assigned-guest-name {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--aqua-deep);
+    }
+    .unassign-btn {
+      background: none;
+      border: none;
+      color: #ef9a9a;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 3px;
+      border-radius: 4px;
+    }
+    .unassign-btn:hover { color: #c62828; }
+
+    /* assign select */
+    .assign-select {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-dark);
+      background: var(--aqua-mist);
+      border: 2px solid var(--aqua-foam);
+      border-radius: 10px;
+      padding: 10px 14px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .assign-select:focus { border-color: var(--aqua-light); }
+    .assign-confirm-btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--aqua-mid);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .assign-confirm-btn:hover { background: var(--aqua-deep); }
+
+    /* Save bar */
+    .save-bar {
+      position: sticky;
+      bottom: 0;
+      background: var(--aqua-deep);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 50;
+    }
+    .save-status {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+    .save-btn {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border: none;
+      border-radius: 50px;
+      padding: 12px 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(200,168,75,0.35);
+      transition: transform 0.15s;
+    }
+    .save-btn:active { transform: scale(0.97); }
+
+    /* Settings tab */
+    .settings-section { padding: 24px 20px; }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--aqua-foam);
+      margin-bottom: 12px;
+    }
+    .settings-label {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--aqua-deep);
+      flex: 1;
+    }
+    .settings-input {
+      width: 80px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-dark);
+      background: var(--aqua-mist);
+      border: 2px solid var(--aqua-foam);
+      border-radius: 10px;
+      padding: 10px;
+      outline: none;
+    }
+    .settings-input:focus { border-color: var(--aqua-light); }
+    .apply-settings-btn {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--aqua-mid);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .apply-settings-btn:hover { background: var(--aqua-deep); }
+    .danger-btn {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: #e53935;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="admin-login" id="admin-login">
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">Area Admin</div>
+    <div class="login-sub">Gestione tavoli</div>
+    <input class="login-field" type="password" id="pwd-input" placeholder="Password admin" autocomplete="current-password">
+    <button class="login-btn" id="login-btn">Accedi</button>
+    <div class="login-error" id="login-error">❌ Password errata</div>
+    <div style="margin-top:20px;">
+      <a href="tavoli.html" style="font-family:'Montserrat',sans-serif;font-size:11px;color:#8ab0b8;text-decoration:none;">
+        ← Torna alla pagina ospiti
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="admin-panel">
+
+  <div class="admin-header">
+    <div>
+      <div class="admin-header-title">🗂 Gestione Tavoli</div>
+      <div class="admin-header-sub">Pannello Amministratore · Matrimonio 26/07/2026</div>
+    </div>
+    <button class="logout-btn" id="logout-btn">🚪 Esci</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-tab="ospiti">👥 Ospiti</button>
+    <button class="admin-tab" data-tab="tavoli">🪑 Tavoli</button>
+    <button class="admin-tab" data-tab="impostazioni">⚙️ Config</button>
+  </div>
+
+  <!-- Tab Ospiti -->
+  <div class="tab-content active" id="tab-ospiti">
+    <div class="ospiti-section">
+      <div class="section-head">
+        <div class="section-head-title">Lista Ospiti</div>
+      </div>
+
+      <!-- Aggiungi ospite -->
+      <div class="add-guest-row">
+        <input class="guest-input" id="input-nome" type="text" placeholder="Nome" autocomplete="off">
+        <input class="guest-input" id="input-cognome" type="text" placeholder="Cognome" autocomplete="off">
+        <button class="add-btn" id="add-guest-btn">+ Aggiungi</button>
+      </div>
+
+      <ul class="guest-list" id="guest-list"></ul>
+    </div>
+  </div>
+
+  <!-- Tab Tavoli -->
+  <div class="tab-content" id="tab-tavoli">
+    <div class="tavoli-admin-section" id="tavoli-admin-list"></div>
+  </div>
+
+  <!-- Tab Impostazioni -->
+  <div class="tab-content" id="tab-impostazioni">
+    <div class="settings-section">
+      <div class="section-head">
+        <div class="section-head-title">Configurazione</div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">Numero di tavoli</div>
+        <input class="settings-input" type="number" id="set-tavoli" min="1" max="30" value="15">
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">Posti per tavolo</div>
+        <input class="settings-input" type="number" id="set-posti" min="1" max="20" value="10">
+      </div>
+      <button class="apply-settings-btn" id="apply-settings-btn">✅ Applica configurazione</button>
+      <button class="danger-btn" id="reset-btn">🗑 Reset completo (cancella tutto)</button>
+    </div>
+  </div>
+
+  <!-- Save bar -->
+  <div class="save-bar">
+    <div class="save-status" id="save-status">Modifiche non salvate</div>
+    <button class="save-btn" id="save-btn">💾 Salva tutto</button>
+  </div>
+
+</div>
+
+<script>
+  /* ════════════════════════════════════════
+     COSTANTI & STATO
+  ════════════════════════════════════════ */
+  var ADMIN_PWD = 'admin2026'; // ← cambia questa password!
+  var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
+  var dirty = false;
+
+  /* ════════════════════════════════════════
+     LOGIN
+  ════════════════════════════════════════ */
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+  document.getElementById('pwd-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doLogin();
+  });
+
+  function doLogin() {
+    var pwd = document.getElementById('pwd-input').value;
+    if (pwd === ADMIN_PWD) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-panel').classList.add('visible');
+      loadData();
+      renderAll();
+    } else {
+      document.getElementById('login-error').classList.add('visible');
+      document.getElementById('pwd-input').value = '';
+    }
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    document.getElementById('admin-login').style.display = 'flex';
+    document.getElementById('admin-panel').classList.remove('visible');
+    document.getElementById('pwd-input').value = '';
+  });
+
+  /* ════════════════════════════════════════
+     TABS
+  ════════════════════════════════════════ */
+  document.querySelectorAll('.admin-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      if (tab.dataset.tab === 'tavoli') renderTavoliAdmin();
+    });
+  });
+
+  /* ════════════════════════════════════════
+     DATI
+  ════════════════════════════════════════ */
+  function loadData() {
+    try {
+      var raw = JSON.parse(localStorage.getItem('matrimonio_tavoli'));
+      if (raw) {
+        state.tavoli = raw.tavoli || [];
+        state.ospiti = raw.ospiti || [];
+        state.seatsPerTable = raw.seatsPerTable || 10;
+      } else {
+        initDefault(15, 10);
+      }
+    } catch(e) { initDefault(15, 10); }
+    document.getElementById('set-tavoli').value = state.tavoli.length;
+    document.getElementById('set-posti').value = state.seatsPerTable;
+  }
+
+  function initDefault(nTavoli, nPosti) {
+    state.tavoli = [];
+    state.ospiti = [];
+    state.seatsPerTable = nPosti;
+    for (var i = 1; i <= nTavoli; i++) {
+      state.tavoli.push({ id: i, nome: 'Tavolo ' + i, posti: [] });
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem('matrimonio_tavoli', JSON.stringify({
+      tavoli: state.tavoli,
+      ospiti: state.ospiti,
+      seatsPerTable: state.seatsPerTable
+    }));
+    dirty = false;
+    document.getElementById('save-status').textContent = '✅ Salvato!';
+    setTimeout(function(){ document.getElementById('save-status').textContent = 'Tutto salvato'; }, 2000);
+  }
+
+  function markDirty() {
+    dirty = true;
+    document.getElementById('save-status').textContent = '● Modifiche non salvate';
+  }
+
+  document.getElementById('save-btn').addEventListener('click', saveData);
+
+  /* ════════════════════════════════════════
+     RENDER ALL
+  ════════════════════════════════════════ */
+  function renderAll() {
+    renderOspiti();
+    renderTavoliAdmin();
+  }
+
+  /* ════════════════════════════════════════
+     OSPITI
+  ════════════════════════════════════════ */
+  document.getElementById('add-guest-btn').addEventListener('click', addGuest);
+  document.getElementById('input-cognome').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') addGuest();
+  });
+
+  function addGuest() {
+    var nome = document.getElementById('input-nome').value.trim();
+    var cognome = document.getElementById('input-cognome').value.trim();
+    if (!nome && !cognome) return;
+    var fullName = (nome + ' ' + cognome).trim();
+    state.ospiti.push({ id: Date.now(), nome: fullName, tavolo: null });
+    document.getElementById('input-nome').value = '';
+    document.getElementById('input-cognome').value = '';
+    document.getElementById('input-nome').focus();
+    markDirty();
+    renderOspiti();
+  }
+
+  function renderOspiti() {
+    var ul = document.getElementById('guest-list');
+    ul.innerHTML = '';
+    if (state.ospiti.length === 0) {
+      ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome e cognome qui sopra.</li>';
+      return;
+    }
+    state.ospiti.forEach(function(ospite){
+      var li = document.createElement('li');
+      li.className = 'guest-item';
+
+      var tavoloAssegnato = null;
+      state.tavoli.forEach(function(t){
+        if (t.posti.indexOf(ospite.nome) !== -1) tavoloAssegnato = t;
+      });
+
+      li.innerHTML =
+        '<span class="guest-item-name">' + escHtml(ospite.nome) + '</span>' +
+        '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' +
+          (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.nome) : 'Non assegnato') +
+        '</span>' +
+        '<button class="guest-del-btn" title="Rimuovi ospite">✕</button>';
+
+      li.querySelector('.guest-del-btn').addEventListener('click', function(){
+        if (!confirm('Rimuovere ' + ospite.nome + '?')) return;
+        // Rimuovi da eventuali tavoli
+        state.tavoli.forEach(function(t){
+          var idx = t.posti.indexOf(ospite.nome);
+          if (idx !== -1) t.posti.splice(idx, 1);
+        });
+        state.ospiti = state.ospiti.filter(function(o){ return o.id !== ospite.id; });
+        markDirty();
+        renderOspiti();
+        renderTavoliAdmin();
+      });
+
+      ul.appendChild(li);
+    });
+  }
+
+  /* ════════════════════════════════════════
+     TAVOLI ADMIN
+  ════════════════════════════════════════ */
+  function renderTavoliAdmin() {
+    var container = document.getElementById('tavoli-admin-list');
+    container.innerHTML = '';
+
+    state.tavoli.forEach(function(tavolo){
+      var card = document.createElement('div');
+      card.className = 'tavolo-admin-card';
+      card.dataset.id = tavolo.id;
+
+      // Header cliccabile
+      var header = document.createElement('div');
+      header.className = 'tavolo-admin-header';
+      header.innerHTML =
+        '<div class="tavolo-admin-number">' + tavolo.id + '</div>' +
+        '<div class="tavolo-admin-name-wrap">' +
+          '<input class="tavolo-admin-name-input" type="text" value="' + escHtml(tavolo.nome) + '" placeholder="Nome tavolo">' +
+          '<div class="tavolo-admin-count">' + tavolo.posti.length + ' / ' + state.seatsPerTable + ' posti</div>' +
+        '</div>' +
+        '<span class="tavolo-toggle">▾</span>';
+
+      header.querySelector('.tavolo-admin-name-input').addEventListener('change', function(e){
+        tavolo.nome = e.target.value.trim() || ('Tavolo ' + tavolo.id);
+        markDirty();
+        renderOspiti();
+      });
+      // Impedisci click sull'input di aprire/chiudere
+      header.querySelector('.tavolo-admin-name-input').addEventListener('click', function(e){
+        e.stopPropagation();
+      });
+      header.addEventListener('click', function(){
+        card.classList.toggle('open');
+      });
+
+      // Body
+      var body = document.createElement('div');
+      body.className = 'tavolo-admin-body';
+
+      // Lista assegnati
+      var dropZone = document.createElement('div');
+      dropZone.className = 'drop-zone';
+      if (tavolo.posti.length === 0) {
+        dropZone.innerHTML = '<div class="drop-zone-hint">Nessun ospite assegnato a questo tavolo</div>';
+      } else {
+        tavolo.posti.forEach(function(nome){
+          if (!nome || !nome.trim()) return;
+          var ag = document.createElement('div');
+          ag.className = 'assigned-guest';
+          ag.innerHTML =
+            '<span class="assigned-guest-name">' + escHtml(nome) + '</span>' +
+            '<button class="unassign-btn" title="Rimuovi dal tavolo">✕</button>';
+          ag.querySelector('.unassign-btn').addEventListener('click', function(){
+            var idx = tavolo.posti.indexOf(nome);
+            if (idx !== -1) tavolo.posti.splice(idx, 1);
+            markDirty();
+            renderTavoliAdmin();
+            renderOspiti();
+          });
+          dropZone.appendChild(ag);
+        });
+      }
+
+      // Select per assegnare
+      var freeOspiti = getFreeOspiti();
+      if (freeOspiti.length > 0 && tavolo.posti.length < state.seatsPerTable) {
+        var sel = document.createElement('select');
+        sel.className = 'assign-select';
+        sel.innerHTML = '<option value="">-- Seleziona ospite da assegnare --</option>';
+        freeOspiti.forEach(function(o){
+          var opt = document.createElement('option');
+          opt.value = o.nome;
+          opt.textContent = o.nome;
+          sel.appendChild(opt);
+        });
+        var assignBtn = document.createElement('button');
+        assignBtn.className = 'assign-confirm-btn';
+        assignBtn.textContent = '+ Assegna al tavolo';
+        assignBtn.addEventListener('click', function(){
+          var val = sel.value;
+          if (!val) return;
+          if (tavolo.posti.length >= state.seatsPerTable) {
+            alert('Tavolo pieno! Massimo ' + state.seatsPerTable + ' posti.');
+            return;
+          }
+          tavolo.posti.push(val);
+          markDirty();
+          renderTavoliAdmin();
+          renderOspiti();
+        });
+        body.appendChild(dropZone);
+        body.appendChild(sel);
+        body.appendChild(assignBtn);
+      } else {
+        body.appendChild(dropZone);
+        if (tavolo.posti.length >= state.seatsPerTable) {
+          var fullMsg = document.createElement('div');
+          fullMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
+          fullMsg.textContent = '✅ Tavolo completo';
+          body.appendChild(fullMsg);
+        } else if (freeOspiti.length === 0) {
+          var noGuestMsg = document.createElement('div');
+          noGuestMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
+          noGuestMsg.textContent = 'Tutti gli ospiti sono già assegnati';
+          body.appendChild(noGuestMsg);
+        }
+      }
+
+      card.appendChild(header);
+      card.appendChild(body);
+      container.appendChild(card);
+    });
+  }
+
+  function getFreeOspiti() {
+    var assigned = [];
+    state.tavoli.forEach(function(t){
+      t.posti.forEach(function(p){ if (p) assigned.push(p); });
+    });
+    return state.ospiti.filter(function(o){
+      return assigned.indexOf(o.nome) === -1;
+    });
+  }
+
+  /* ════════════════════════════════════════
+     IMPOSTAZIONI
+  ════════════════════════════════════════ */
+  document.getElementById('apply-settings-btn').addEventListener('click', function(){
+    var nT = parseInt(document.getElementById('set-tavoli').value) || 15;
+    var nP = parseInt(document.getElementById('set-posti').value) || 10;
+    nT = Math.min(Math.max(nT, 1), 30);
+    nP = Math.min(Math.max(nP, 1), 20);
+
+    state.seatsPerTable = nP;
+
+    // Aggiungi tavoli mancanti
+    while (state.tavoli.length < nT) {
+      var nextId = state.tavoli.length + 1;
+      state.tavoli.push({ id: nextId, nome: 'Tavolo ' + nextId, posti: [] });
+    }
+    // Rimuovi tavoli in eccesso (avviso se hanno ospiti)
+    if (state.tavoli.length > nT) {
+      var toRemove = state.tavoli.slice(nT);
+      var hasGuests = toRemove.some(function(t){ return t.posti.length > 0; });
+      if (hasGuests) {
+        if (!confirm('Alcuni tavoli da rimuovere hanno ospiti assegnati. Continuare? Gli ospiti torneranno non assegnati.')) return;
+      }
+      state.tavoli = state.tavoli.slice(0, nT);
+    }
+
+    markDirty();
+    renderAll();
+    alert('✅ Configurazione applicata: ' + nT + ' tavoli, ' + nP + ' posti per tavolo.');
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', function(){
+    if (!confirm('⚠️ ATTENZIONE: questo cancellerà TUTTI gli ospiti e le assegnazioni. Sei sicuro?')) return;
+    if (!confirm('Ultima conferma: cancellare davvero tutto?')) return;
+    localStorage.removeItem('matrimonio_tavoli');
+    initDefault(15, 10);
+    document.getElementById('set-tavoli').value = 15;
+    document.getElementById('set-posti').value = 10;
+    markDirty();
+    renderAll();
+  });
+
+  /* ════════════════════════════════════════
+     UTILITY
+  ════════════════════════════════════════ */
+  function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
