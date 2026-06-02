@@ -585,6 +585,10 @@ html, body {
   font-style: normal;
   font-weight: 600;
 }
+.site-footer {
+  color: var(--gold-light);
+  font-style: normal;
+}
 .footer-date-stamp {
   font-family: var(--font-body);
   font-size: 10px;
