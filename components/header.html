@@ -1,0 +1,34 @@
+<!-- ═══════════════════════════════════════════
+     HEADER — navbar + immagini hero
+     Incluso via script in index.html
+     File: components/header.html
+═══════════════════════════════════════════ -->
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html#top" class="navbar-brand">
+    Il Nostro Matrimonio
+    <span>26 · 07 · 2026</span>
+  </a>
+  <ul class="navbar-links" role="navigation" aria-label="Navigazione principale">
+    <li><a href="index.html#cerimonia">Cerimonia</a></li>
+    <li><a href="index.html#dresscode">Dress Code</a></li>
+    <li><a href="index.html#location">Location</a></li>
+    <li><a href="index.html#rsvp">RSVP</a></li>
+  </ul>
+  <!-- Hamburger (mobile) -->
+  <button class="navbar-hamburger" id="nav-toggle" aria-label="Apri menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU DRAWER -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <ul>
+    <li><a href="index.html#cerimonia" class="mobile-link">🌊 Cerimonia</a></li>
+    <li><a href="index.html#dresscode" class="mobile-link">✨ Dress Code</a></li>
+    <li><a href="index.html#location"  class="mobile-link">🚗 Location</a></li>
+    <li><a href="index.html#rsvp"      class="mobile-link">💌 RSVP</a></li>
+  </ul>
+</div>
+<div class="mobile-menu-overlay" id="mobile-overlay"></div>
