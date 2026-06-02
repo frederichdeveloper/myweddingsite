@@ -389,6 +389,31 @@
   if (b1) b1.href = "https://wa.me/393280567556?text=" + msg;
   if (b2) b2.href = "https://wa.me/393935098068?text=" + msg;
 </script>
+  <!-- Pulsante Freccia Torna Su -->
+<button id="backToTop" title="Torna all'inizio">➔</button>
+
+<script>
+  // Seleziona il pulsante
+  const btn = document.getElementById("backToTop");
+
+  // Mostra il pulsante solo quando si scende di 300px
+  window.onscroll = function() {
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+      btn.style.display = "block";
+    } else {
+      btn.style.display = "none";
+    }
+  };
+
+  // Torna su in modo fluido quando si clicca
+  btn.addEventListener("click", function() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+</script>
+
 
 </body>
 </html>
