@@ -15,6 +15,34 @@
 </head>
 <body>
 
+  <!-- OVERLAY SCELTA RUOLO -->
+  <div id="role-overlay" class="role-overlay" aria-hidden="false">
+    <div class="role-modal">
+      <div class="role-badge">Benvenuto</div>
+      <h1 class="role-title">Scegli l'accesso</h1>
+      <p class="role-text">Se sei un ospite entra come utente. Se devi gestire i tavoli, accedi come admin.</p>
+      <div class="role-actions">
+        <button class="role-btn role-user" id="role-user-btn">UTENTE</button>
+        <button class="role-btn role-admin" id="role-admin-btn">ADMIN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY PASSWORD ADMIN -->
+  <div id="admin-password-overlay" class="role-overlay role-hidden" aria-hidden="true">
+    <div class="role-modal">
+      <div class="role-badge">Accesso Admin</div>
+      <h1 class="role-title">Inserisci la password</h1>
+      <p class="role-text">Solo chi conosce la password può vedere anche le pagine admin.</p>
+      <input id="admin-password-input" class="role-input" type="password" placeholder="Password admin" autocomplete="current-password">
+      <div class="role-actions">
+        <button class="role-btn role-admin" id="admin-login-btn">ENTRA</button>
+        <button class="role-btn role-cancel" id="admin-back-btn">INDIETRO</button>
+      </div>
+      <p class="role-error" id="admin-error">Password errata.</p>
+    </div>
+  </div>
+
   <!-- Header caricato da componente esterno -->
   <div id="site-header"></div>
 
@@ -60,7 +88,7 @@
         <div class="date-img-overlay-bottom"></div>
       </div>
 
-       <!-- ── RSVP ── -->
+      <!-- RSVP -->
       <section class="rsvp-section" id="rsvp">
         <div class="section-icon icon-green">💌</div>
         <h2 class="rsvp-title">Conferma la tua Presenza</h2>
@@ -103,8 +131,7 @@
         <p class="rsvp-note">✉️ Il messaggio è già precompilato — ti basterà inviarlo!</p>
       </section>
 
-
-      <!-- ── Cerimonia ── -->
+      <!-- Cerimonia -->
       <section class="section section-alt" id="cerimonia">
         <div class="section-icon icon-aqua">🌊</div>
         <h2 class="section-title">La Cerimonia</h2>
@@ -154,7 +181,7 @@
         </svg>
       </div>
 
-      <!-- ── Dress Code ── -->
+      <!-- Dress Code -->
       <section class="section" id="dresscode">
         <div class="section-icon icon-gold">✨</div>
         <h2 class="section-title">Un'Info Importante</h2>
@@ -188,7 +215,7 @@
         </svg>
       </div>
 
-      <!-- ── Come Arrivare ── -->
+      <!-- Come Arrivare -->
       <section class="section section-dark" id="location">
         <div class="section-icon icon-dark">🚗</div>
         <h2 class="section-title section-title-light">Come Arrivare</h2>
@@ -239,7 +266,7 @@
         </svg>
       </div>
 
-      <!-- ── La Serata ── -->
+      <!-- Serata -->
       <section class="section">
         <div class="section-icon icon-aqua">🥂</div>
         <h2 class="section-title">La Serata</h2>
@@ -278,13 +305,10 @@
         </svg>
       </div>
 
-    
-      <!-- Footer caricato da componente esterno -->
       <div id="site-footer-slot"></div>
 
-    </main><!-- .page -->
+    </main>
 
-    <!-- Aside destra (solo desktop) -->
     <aside class="site-aside">
       <div class="sidebar-widget">
         <div class="sidebar-widget-title">Cerimonia &amp; Ricevimento</div>
@@ -303,117 +327,157 @@
       </div>
     </aside>
 
-  </div><!-- .site-wrapper -->
+  </div>
 
-  <!-- ═══ JAVASCRIPT ═══ -->
-<script>
-  /* ── Carica header e footer da componenti esterni ── */
-  function loadComponent(url, targetId, callback) {
-    fetch(url)
-      .then(function(res) { return res.text(); })
-      .then(function(html) {
-        var el = document.getElementById(targetId);
-        if (!el) return;
-        el.innerHTML = html;
-        el.querySelectorAll('script').forEach(function(s) {
-          var ns = document.createElement('script');
-          ns.textContent = s.textContent;
-          document.body.appendChild(ns);
-          s.remove();
-        });
-        if (callback) callback();
-      })
-      .catch(function(err) { console.warn('Componente non caricato:', err); });
-  }
-
-  /* ── Hamburger: inizializzato DOPO che header.html è nel DOM ── */
-  function initNavHamburger() {
-    var btn     = document.getElementById('nav-toggle');
-    var menu    = document.getElementById('mobile-menu');
-    var overlay = document.getElementById('mobile-overlay');
-
-    if (!btn || !menu || !overlay) {
-      /* Riprova dopo 100ms se il DOM non è ancora pronto */
-      setTimeout(initNavHamburger, 100);
-      return;
+  <!-- JAVASCRIPT -->
+  <script>
+    function loadComponent(url, targetId, callback) {
+      fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(html) {
+          var el = document.getElementById(targetId);
+          if (!el) return;
+          el.innerHTML = html;
+          if (callback) callback();
+        })
+        .catch(function(err) { console.warn('Componente non caricato:', err); });
     }
 
-    function closeMenu() {
-      btn.classList.remove('open');
-      menu.classList.remove('open');
-      overlay.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-      menu.setAttribute('aria-hidden', 'true');
+    function initNavHamburger() {
+      var btn = document.getElementById('nav-toggle');
+      var menu = document.getElementById('mobile-menu');
+      var overlay = document.getElementById('mobile-overlay');
+      if (!btn || !menu || !overlay) { setTimeout(initNavHamburger, 100); return; }
+
+      function closeMenu() {
+        btn.classList.remove('open');
+        menu.classList.remove('open');
+        overlay.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+      }
+
+      btn.addEventListener('click', function() {
+        var isOpen = menu.classList.toggle('open');
+        btn.classList.toggle('open');
+        overlay.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(isOpen));
+        menu.setAttribute('aria-hidden', String(!isOpen));
+      });
+
+      overlay.addEventListener('click', closeMenu);
+      document.querySelectorAll('.mobile-link').forEach(function(a) {
+        a.addEventListener('click', closeMenu);
+      });
     }
 
-    btn.addEventListener('click', function() {
-      var isOpen = menu.classList.toggle('open');
-      btn.classList.toggle('open');
-      overlay.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(isOpen));
-      menu.setAttribute('aria-hidden', String(!isOpen));
+    loadComponent('components/header.html', 'site-header', initNavHamburger);
+    loadComponent('components/footer.html', 'site-footer-slot', null);
+
+    var wedding = new Date('2026-07-26T18:00:00');
+    function updateCountdown() {
+      var diff = wedding - new Date();
+      if (diff > 0) {
+        var el = document.getElementById('sidebar-days');
+        if (el) el.textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
+      }
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 60000);
+
+    var msg = encodeURIComponent(
+      "Ciao! 🎊\n\n" +
+      "Ho ricevuto il vostro invito per il matrimonio del 26 Luglio 2026.\n\n" +
+      "✅ CONFERMO la mia partecipazione!\n\n" +
+      "Non vedo l'ora di festeggiare con voi! 🥂🌊"
+    );
+    var b1 = document.getElementById('rsvp-btn');
+    var b2 = document.getElementById('rsvp-btn-2');
+    if (b1) b1.href = "https://wa.me/393280567556?text=" + msg;
+    if (b2) b2.href = "https://wa.me/393935098068?text=" + msg;
+
+    (function() {
+      var allowed = sessionStorage.getItem('site_role');
+      if (!allowed) {
+        document.body.classList.add('role-lock');
+      }
+
+      var roleOverlay = document.getElementById('role-overlay');
+      var adminOverlay = document.getElementById('admin-password-overlay');
+      var userBtn = document.getElementById('role-user-btn');
+      var adminBtn = document.getElementById('role-admin-btn');
+      var adminLoginBtn = document.getElementById('admin-login-btn');
+      var adminBackBtn = document.getElementById('admin-back-btn');
+      var adminInput = document.getElementById('admin-password-input');
+      var adminError = document.getElementById('admin-error');
+      var ADMIN_PWD = 'admin2026';
+
+      function show(el) {
+        el.classList.remove('role-hidden');
+        el.setAttribute('aria-hidden', 'false');
+      }
+
+      function hide(el) {
+        el.classList.add('role-hidden');
+        el.setAttribute('aria-hidden', 'true');
+      }
+
+      function unlock(role) {
+        sessionStorage.setItem('site_role', role);
+        hide(roleOverlay);
+        hide(adminOverlay);
+        document.body.classList.remove('role-lock');
+        location.reload();
+      }
+
+      if (allowed === 'admin') {
+        document.body.classList.remove('role-lock');
+      }
+
+      if (userBtn) userBtn.addEventListener('click', function() { unlock('user'); });
+      if (adminBtn) adminBtn.addEventListener('click', function() {
+        hide(roleOverlay);
+        show(adminOverlay);
+        if (adminInput) setTimeout(function() { adminInput.focus(); }, 50);
+      });
+      if (adminBackBtn) adminBackBtn.addEventListener('click', function() {
+        hide(adminOverlay);
+        show(roleOverlay);
+        if (adminError) adminError.style.display = 'none';
+      });
+      if (adminLoginBtn) adminLoginBtn.addEventListener('click', function() {
+        if ((adminInput && adminInput.value) === ADMIN_PWD) {
+          unlock('admin');
+        } else {
+          if (adminError) adminError.style.display = 'block';
+          if (adminInput) adminInput.value = '';
+        }
+      });
+      if (adminInput) adminInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') adminLoginBtn.click();
+      });
+
+      if (allowed) {
+        hide(roleOverlay);
+        hide(adminOverlay);
+      }
+    })();
+  </script>
+
+  <button id="backToTop" title="Torna all'inizio">➔</button>
+  <script>
+    const btn = document.getElementById("backToTop");
+    window.onscroll = function() {
+      if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+    btn.addEventListener("click", function() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
-
-    overlay.addEventListener('click', closeMenu);
-
-    document.querySelectorAll('.mobile-link').forEach(function(a) {
-      a.addEventListener('click', closeMenu);
-    });
-  }
-
-  /* Carica header → poi inizializza hamburger */
-  loadComponent('components/header.html', 'site-header', initNavHamburger);
-  loadComponent('components/footer.html', 'site-footer-slot', null);
-
-  /* ── Countdown sidebar ── */
-  var wedding = new Date('2026-07-26T18:00:00');
-  function updateCountdown() {
-    var diff = wedding - new Date();
-    if (diff > 0) {
-      var el = document.getElementById('sidebar-days');
-      if (el) el.textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
-    }
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 60000);
-
-  /* ── Pulsanti RSVP WhatsApp ── */
-  var msg = encodeURIComponent(
-    "Ciao! 🎊\n\n" +
-    "Ho ricevuto il vostro invito per il matrimonio del 26 Luglio 2026.\n\n" +
-    "✅ CONFERMO la mia partecipazione!\n\n" +
-    "Non vedo l'ora di festeggiare con voi! 🥂🌊"
-  );
-  var b1 = document.getElementById('rsvp-btn');
-  var b2 = document.getElementById('rsvp-btn-2');
-  if (b1) b1.href = "https://wa.me/393280567556?text=" + msg;
-  if (b2) b2.href = "https://wa.me/393935098068?text=" + msg;
-</script>
-  <!-- Pulsante Freccia Torna Su -->
-<button id="backToTop" title="Torna all'inizio">➔</button>
-
-<script>
-  // Seleziona il pulsante
-  const btn = document.getElementById("backToTop");
-
-  // Mostra il pulsante solo quando si scende di 300px
-  window.onscroll = function() {
-    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-      btn.style.display = "block";
-    } else {
-      btn.style.display = "none";
-    }
-  };
-
-  // Torna su in modo fluido quando si clicca
-  btn.addEventListener("click", function() {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  });
-</script>
-
+  </script>
 
 </body>
 </html>
