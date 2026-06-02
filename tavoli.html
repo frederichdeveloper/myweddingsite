@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Tavoli · Matrimonio 26 Luglio 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Pagina Tavoli ── */
+    .tavoli-hero {
+      background: linear-gradient(135deg, var(--aqua-deep) 0%, var(--aqua-mid) 100%);
+      padding: 48px 28px 36px;
+      text-align: center;
+    }
+    .tavoli-hero-icon { font-size: 48px; margin-bottom: 12px; }
+    .tavoli-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 8vw, 2.8rem);
+      font-weight: 600;
+      font-style: italic;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .tavoli-hero-sub {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--aqua-pale);
+    }
+
+    /* ── Search Box ── */
+    .search-section {
+      background: var(--white);
+      padding: 32px 28px;
+      border-bottom: 1px solid var(--aqua-foam);
+    }
+    .search-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--aqua-light);
+      display: block;
+      margin-bottom: 10px;
+    }
+    .search-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-dark);
+      background: var(--aqua-mist);
+      border: 2px solid var(--aqua-foam);
+      border-radius: 12px;
+      padding: 14px 18px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--aqua-light); }
+    .search-input::placeholder { color: rgba(10,79,92,0.35); }
+    .search-btn {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-dark);
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border: none;
+      border-radius: 12px;
+      padding: 14px 24px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 14px rgba(200,168,75,0.3);
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .search-btn:active { transform: scale(0.97); }
+    .search-hint {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: #8ab0b8;
+      margin-top: 10px;
+    }
+
+    /* ── Quick selector ── */
+    .quick-section {
+      background: var(--aqua-mist);
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--aqua-foam);
+    }
+    .quick-label {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--aqua-light);
+      margin-bottom: 12px;
+    }
+    .quick-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .quick-btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--aqua-deep);
+      background: var(--white);
+      border: 2px solid var(--aqua-foam);
+      border-radius: 50px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .quick-btn:hover, .quick-btn.active {
+      background: var(--aqua-deep);
+      border-color: var(--aqua-deep);
+      color: var(--white);
+    }
+
+    /* ── Result ── */
+    .result-section {
+      padding: 28px;
+      display: none;
+    }
+    .result-section.visible { display: block; }
+
+    .table-card {
+      background: linear-gradient(135deg, var(--aqua-deep) 0%, var(--aqua-mid) 100%);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(10,79,92,0.25);
+    }
+    .table-card-header {
+      padding: 28px 24px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      position: relative;
+    }
+    .table-number-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      box-shadow: 0 4px 16px rgba(200,168,75,0.4);
+    }
+    .table-name-display {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 6vw, 1.8rem);
+      font-weight: 600;
+      font-style: italic;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .table-seats-info {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--aqua-pale);
+    }
+
+    /* Tavolo SVG visuale */
+    .table-visual {
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .table-svg-wrap { position: relative; width: 280px; }
+
+    /* Lista posti */
+    .seats-list {
+      padding: 0 20px 20px;
+    }
+    .seat-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: background 0.15s;
+    }
+    .seat-item.empty {
+      opacity: 0.4;
+    }
+    .seat-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--aqua-pale);
+      flex-shrink: 0;
+    }
+    .seat-item:not(.empty) .seat-number {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--text-dark);
+    }
+    .seat-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .seat-empty-label {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      font-style: italic;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 28px;
+      display: none;
+    }
+    .empty-state.visible { display: block; }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--aqua-deep);
+      margin-bottom: 8px;
+    }
+    .empty-state-text {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: #5a8a96;
+      line-height: 1.6;
+    }
+
+    /* Not found */
+    .not-found {
+      background: #fff5f5;
+      border: 2px solid #ffcdd2;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      display: none;
+    }
+    .not-found.visible { display: block; }
+    .not-found-icon { font-size: 32px; margin-bottom: 8px; }
+    .not-found-text {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: #c62828;
+      line-height: 1.6;
+    }
+
+    /* Admin link */
+    .admin-link-bar {
+      background: var(--aqua-mist);
+      padding: 16px 28px;
+      text-align: center;
+      border-top: 1px solid var(--aqua-foam);
+    }
+    .admin-link-bar a {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(10,79,92,0.4);
+      text-decoration: none;
+    }
+    .admin-link-bar a:hover { color: var(--aqua-mid); }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="site-wrapper">
+  <aside class="site-sidebar">
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">Tavoli disponibili</div>
+      <div class="sidebar-days" id="sb-tavoli-count">—</div>
+      <div class="sidebar-days-label">tavoli totali</div>
+    </div>
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">Ospiti assegnati</div>
+      <div class="sidebar-widget-value" id="sb-ospiti-count">—</div>
+      <div class="sidebar-widget-sub">su totale invitati</div>
+    </div>
+  </aside>
+
+  <main class="page">
+
+    <!-- Hero -->
+    <div class="tavoli-hero">
+      <div class="tavoli-hero-icon">🪑</div>
+      <div class="tavoli-hero-title">I Tavoli</div>
+      <div class="tavoli-hero-sub">Trova il tuo posto · 26 Luglio 2026</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-section">
+      <label class="search-label" for="search-input">Cerca il tuo tavolo</label>
+      <div class="search-row">
+        <input
+          class="search-input"
+          id="search-input"
+          type="text"
+          placeholder="Es: Tavolo 3 oppure &quot;Mare&quot;"
+          autocomplete="off"
+          inputmode="text"
+        >
+        <button class="search-btn" id="search-btn">🔍 Cerca</button>
+      </div>
+      <div class="search-hint">Inserisci il numero del tavolo (1–15) oppure il nome</div>
+    </div>
+
+    <!-- Quick selector -->
+    <div class="quick-section">
+      <div class="quick-label">Oppure seleziona direttamente</div>
+      <div class="quick-grid" id="quick-grid">
+        <!-- generato da JS -->
+      </div>
+    </div>
+
+    <!-- Empty state iniziale -->
+    <div class="empty-state visible" id="empty-state">
+      <div class="empty-state-icon">🌊</div>
+      <div class="empty-state-title">Cerca il tuo tavolo</div>
+      <div class="empty-state-text">
+        Inserisci il numero o il nome del tavolo<br>per scoprire chi sarà seduto con te!
+      </div>
+    </div>
+
+    <!-- Not found -->
+    <div class="not-found" id="not-found">
+      <div class="not-found-icon">🔍</div>
+      <div class="not-found-text">
+        Nessun tavolo trovato con questa ricerca.<br>
+        Prova con il numero (es. <strong>3</strong>) o il nome esatto.
+      </div>
+    </div>
+
+    <!-- Risultato tavolo -->
+    <div class="result-section" id="result-section">
+      <div class="table-card" id="table-card">
+        <div class="table-card-header">
+          <div class="table-number-badge" id="res-number">1</div>
+          <div class="table-name-display" id="res-name">Tavolo 1</div>
+          <div class="table-seats-info" id="res-seats">0 ospiti assegnati</div>
+        </div>
+        <!-- SVG tavolo visuale -->
+        <div class="table-visual">
+          <svg id="table-svg" width="280" height="200" viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Tavolo ovale -->
+            <ellipse cx="140" cy="100" rx="90" ry="55"
+              fill="rgba(255,255,255,0.12)" stroke="rgba(200,168,75,0.6)" stroke-width="2"/>
+            <text x="140" y="106" text-anchor="middle"
+              font-family="Cormorant Garamond, serif"
+              font-size="18" font-style="italic" fill="rgba(255,255,255,0.5)">Tavolo</text>
+            <!-- Sedie generate da JS -->
+            <g id="svg-chairs"></g>
+          </svg>
+        </div>
+        <!-- Lista posti -->
+        <div class="seats-list" id="seats-list"></div>
+      </div>
+    </div>
+
+    <!-- Admin link -->
+    <div class="admin-link-bar">
+      <a href="admin-tavoli.html">🔐 Accesso amministratore</a>
+    </div>
+
+  </main>
+
+  <aside class="site-aside">
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">Come trovare il posto</div>
+      <div class="sidebar-widget-value" style="font-size:1rem;line-height:1.5;">
+        Cerca per numero o nome tavolo
+      </div>
+      <div class="sidebar-widget-sub">oppure clicca sul numero nella griglia</div>
+    </div>
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">Data</div>
+      <div class="sidebar-widget-value">26 Luglio 2026</div>
+      <div class="sidebar-widget-sub">Domenica · ore 18:00</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  /* ════════════════════════════════════════
+     DATI — letti da localStorage
+  ════════════════════════════════════════ */
+  var NUM_TAVOLI = 15;
+  var SEATS_PER_TABLE = 10;
+
+  function getData() {
+    try {
+      return JSON.parse(localStorage.getItem('matrimonio_tavoli')) || buildDefault();
+    } catch(e) { return buildDefault(); }
+  }
+
+  function buildDefault() {
+    var d = { tavoli: [] };
+    for (var i = 1; i <= NUM_TAVOLI; i++) {
+      d.tavoli.push({ id: i, nome: 'Tavolo ' + i, posti: [] });
+    }
+    return d;
+  }
+
+  /* ════════════════════════════════════════
+     QUICK GRID
+  ════════════════════════════════════════ */
+  var data = getData();
+  NUM_TAVOLI = data.tavoli.length;
+
+  var grid = document.getElementById('quick-grid');
+  data.tavoli.forEach(function(t) {
+    var btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.textContent = t.id;
+    btn.title = t.nome;
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.quick-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      showTable(t.id);
+    });
+    grid.appendChild(btn);
+  });
+
+  /* Sidebar stats */
+  var totalOspiti = data.tavoli.reduce(function(acc, t){ return acc + t.posti.length; }, 0);
+  document.getElementById('sb-tavoli-count').textContent = NUM_TAVOLI;
+  document.getElementById('sb-ospiti-count').textContent = totalOspiti + ' ospiti';
+
+  /* ════════════════════════════════════════
+     SEARCH
+  ════════════════════════════════════════ */
+  document.getElementById('search-btn').addEventListener('click', doSearch);
+  document.getElementById('search-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doSearch();
+  });
+
+  function doSearch() {
+    var q = document.getElementById('search-input').value.trim().toLowerCase();
+    if (!q) return;
+    // cerca per numero
+    var num = parseInt(q);
+    var found = null;
+    if (!isNaN(num)) {
+      found = data.tavoli.find(function(t){ return t.id === num; });
+    }
+    // cerca per nome
+    if (!found) {
+      found = data.tavoli.find(function(t){
+        return t.nome.toLowerCase().includes(q);
+      });
+    }
+    if (found) {
+      showTable(found.id);
+      document.querySelectorAll('.quick-btn').forEach(function(b){
+        b.classList.toggle('active', b.textContent == found.id);
+      });
+    } else {
+      hideAll();
+      document.getElementById('not-found').classList.add('visible');
+    }
+  }
+
+  function hideAll() {
+    document.getElementById('empty-state').classList.remove('visible');
+    document.getElementById('not-found').classList.remove('visible');
+    document.getElementById('result-section').classList.remove('visible');
+  }
+
+  /* ════════════════════════════════════════
+     MOSTRA TAVOLO
+  ════════════════════════════════════════ */
+  function showTable(id) {
+    var t = data.tavoli.find(function(x){ return x.id === id; });
+    if (!t) return;
+    hideAll();
+    document.getElementById('result-section').classList.add('visible');
+
+    document.getElementById('res-number').textContent = t.id;
+    document.getElementById('res-name').textContent = t.nome;
+    var filled = t.posti.filter(function(p){ return p && p.trim(); }).length;
+    document.getElementById('res-seats').textContent =
+      filled + ' ospiti assegnati' + (SEATS_PER_TABLE ? ' · ' + SEATS_PER_TABLE + ' posti totali' : '');
+
+    // SVG sedie
+    drawChairs(SEATS_PER_TABLE, t.posti);
+
+    // Lista posti
+    var list = document.getElementById('seats-list');
+    list.innerHTML = '';
+    for (var i = 0; i < SEATS_PER_TABLE; i++) {
+      var nome = (t.posti[i] || '').trim();
+      var item = document.createElement('div');
+      item.className = 'seat-item' + (nome ? '' : ' empty');
+      item.innerHTML =
+        '<div class="seat-number">' + (i+1) + '</div>' +
+        (nome
+          ? '<div class="seat-name">' + escHtml(nome) + '</div>'
+          : '<div class="seat-empty-label">Posto libero</div>');
+      list.appendChild(item);
+    }
+
+    // Scroll al risultato
+    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ════════════════════════════════════════
+     SVG SEDIE
+  ════════════════════════════════════════ */
+  function drawChairs(n, posti) {
+    var g = document.getElementById('svg-chairs');
+    g.innerHTML = '';
+    var cx = 140, cy = 100, rx = 90, ry = 55, r = 14;
+    for (var i = 0; i < n; i++) {
+      var angle = (2 * Math.PI * i / n) - Math.PI / 2;
+      var ex = cx + (rx + 24) * Math.cos(angle);
+      var ey = cy + (ry + 24) * Math.sin(angle);
+      var filled = (posti[i] || '').trim() !== '';
+      var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', ex.toFixed(1));
+      circle.setAttribute('cy', ey.toFixed(1));
+      circle.setAttribute('r', r);
+      circle.setAttribute('fill', filled ? 'rgba(200,168,75,0.85)' : 'rgba(255,255,255,0.15)');
+      circle.setAttribute('stroke', filled ? 'rgba(200,168,75,1)' : 'rgba(255,255,255,0.3)');
+      circle.setAttribute('stroke-width', '1.5');
+      g.appendChild(circle);
+
+      if (filled) {
+        var initials = getInitials(posti[i]);
+        var txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', ex.toFixed(1));
+        txt.setAttribute('y', (ey + 4).toFixed(1));
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('font-family', 'Montserrat, sans-serif');
+        txt.setAttribute('font-size', '8');
+        txt.setAttribute('font-weight', '600');
+        txt.setAttribute('fill', '#0d3540');
+        txt.textContent = initials;
+        g.appendChild(txt);
+      }
+    }
+  }
+
+  function getInitials(nome) {
+    return nome.trim().split(/\s+/).map(function(w){ return w[0] ? w[0].toUpperCase() : ''; }).slice(0,2).join('');
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── Header ── */
+  function loadComponent(url, targetId, cb) {
+    fetch(url).then(function(r){ return r.text(); }).then(function(html){
+      var el = document.getElementById(targetId);
+      if (el) el.innerHTML = html;
+      if (cb) cb();
+    }).catch(function(){});
+  }
+  loadComponent('components/header.html', 'site-header', null);
+</script>
+</body>
+</html>
