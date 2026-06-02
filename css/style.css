@@ -35,17 +35,14 @@ html, body {
   background: var(--aqua-deep);
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-body);
-    overflow-x: hidden; /* solo orizzontale va bene */
+  overflow-x: hidden;
 }
 
-/* ═══════════════════════════════════════════
-   NAVBAR
-═══════════════════════════════════════════ */
 /* ═══════════════════════════════════════════
    NAVBAR — sticky su mobile e desktop
 ═══════════════════════════════════════════ */
 .navbar {
-  position: -webkit-sticky; /* Safari */
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -59,7 +56,6 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Forza la navbar a stare sempre in cima */
   box-shadow: 0 2px 16px rgba(0,0,0,0.25);
 }
 .navbar-brand {
@@ -94,7 +90,6 @@ html, body {
   color: var(--gold);
   font-size: 18px;
 }
-
 .navbar-links {
   display: none;
   gap: 28px;
@@ -121,11 +116,9 @@ html, body {
   .navbar-date  { display: none; }
 }
 
-
 /* ═══════════════════════════════════════════
-HEADER
+   #SITE-HEADER — contenitore sticky
 ═══════════════════════════════════════════ */
-/* Assicura che #site-header non blocchi lo sticky */
 #site-header {
   position: -webkit-sticky;
   position: sticky;
@@ -605,10 +598,6 @@ HEADER
   color: var(--gold-light);
   font-style: normal;
   font-weight: 600;
-}
-.site-footer {
-  color: var(--gold-light);
-  font-style: normal;
 }
 .footer-date-stamp {
   font-family: var(--font-body);
