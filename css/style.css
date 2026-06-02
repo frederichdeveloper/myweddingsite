@@ -35,16 +35,22 @@ html, body {
   background: var(--aqua-deep);
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-body);
+    overflow-x: hidden; /* solo orizzontale va bene */
 }
 
 /* ═══════════════════════════════════════════
    NAVBAR
 ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   NAVBAR — sticky su mobile e desktop
+═══════════════════════════════════════════ */
 .navbar {
+  position: -webkit-sticky; /* Safari */
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(10, 79, 92, 0.96);
+  z-index: 1000;
+  width: 100%;
+  background: rgba(10, 79, 92, 0.97);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(200,168,75,0.25);
@@ -53,6 +59,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* Forza la navbar a stare sempre in cima */
+  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
 }
 .navbar-brand {
   font-family: var(--font-display);
@@ -111,6 +119,19 @@ html, body {
   }
   .navbar-links { display: flex; }
   .navbar-date  { display: none; }
+}
+
+
+/* ═══════════════════════════════════════════
+HEADER
+═══════════════════════════════════════════ */
+/* Assicura che #site-header non blocchi lo sticky */
+#site-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
 }
 
 /* ═══════════════════════════════════════════
@@ -209,7 +230,7 @@ html, body {
   max-width: var(--page-max);
   margin: 0 auto;
   background: var(--white);
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 0 60px rgba(0,0,0,0.35);
 }
 @media (min-width: 860px) {
