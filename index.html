@@ -481,18 +481,6 @@
     });
   </script>
   <script src="js/matrimoniodb-client.js"></script>
-<script>
-// esempio d'uso in tavoli.html
-MatrimonioDB.loadDB().then(function(db){
-// mostra numero tavoli
-document.getElementById('sb-tavoli-count').textContent = db.tables.items.length;
-// mostra tabella 3 se presente
-var t = MatrimonioDB.getTable(3);
-console.log('Tavolo 3', t);
-}).catch(function(err){
-console.error('DB load failed', err);
-});
-</script>
 
 </body>
 </html>
