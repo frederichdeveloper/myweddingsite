@@ -331,6 +331,7 @@
 
   <!-- JAVASCRIPT -->
   <script>
+    sessionStorage.removeItem('site_role');
     function loadComponent(url, targetId, callback) {
       fetch(url)
         .then(function(res) { return res.text(); })
