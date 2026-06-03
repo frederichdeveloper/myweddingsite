@@ -1,4 +1,4 @@
-/*
+ /*
 Funzioni:
 - loadDB(): fetch('/matrimonio-db.json') → ritorna oggetto DB
 - getTable(id): restituisce tavolo per id
@@ -7,6 +7,8 @@ Funzioni:
 - loadLocalCopy(): legge localStorage se presente (utile per testing)
 - assignGuestToTable(guestFullName, tableId): assegna (solo localmente)
 - unassignGuestFromTable(guestFullName): rimuove assegnamento (solo localmente)
+- addGuest(guestFullName): aggiunge ospite al DB locale
+- removeGuest(guestFullName): rimuove ospite dal DB locale
 - syncToRemote(): salvataggio remoto su JSONbin
 */
 
@@ -14,7 +16,7 @@ Funzioni:
   var DB_URL = '/matrimonio-db.json';
   var LOCAL_KEY = 'matrimonio_db_local';
   var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6a200704f5f4af5e29b1d9d5';
-  var JSONBIN_KEY = 'INSERISCI_LA_TUA_MASTER_KEY';
+  var JSONBIN_KEY = '6a200704f5f4af5e29b1d9d5';
   var dbCache = null;
 
   function fetchJSON(url) {
@@ -24,14 +26,45 @@ Funzioni:
     });
   }
 
+  function normalizeDb(db) {
+    if (!db) db = {};
+    if (!db.tables) db.tables = {};
+    if (!Array.isArray(db.tables.items)) db.tables.items = [];
+    if (typeof db.tables.seatsPerTable !== 'number') db.tables.seatsPerTable = 10;
+    if (!Array.isArray(db.guests)) db.guests = [];
+
+    db.tables.items.forEach(function (t, i) {
+      if (typeof t.id !== 'number') t.id = i + 1;
+      if (!t.name && t.nome) t.name = t.nome;
+      if (!t.name) t.name = 'Tavolo ' + t.id;
+      if (!Array.isArray(t.guests)) {
+        if (Array.isArray(t.posti)) t.guests = t.posti.slice();
+        else t.guests = [];
+      }
+      t.guests = t.guests.map(function (g) {
+        if (typeof g === 'string') return g.trim();
+        if (g && typeof g === 'object') return String(g.nome || g.name || '').trim();
+        return '';
+      }).filter(Boolean);
+    });
+
+    db.guests = db.guests.map(function (g) {
+      if (typeof g === 'string') return g.trim();
+      if (g && typeof g === 'object') return String(g.nome || g.name || '').trim();
+      return '';
+    }).filter(Boolean);
+
+    return db;
+  }
+
   function loadDB() {
     var local = loadLocalCopy();
     if (local) {
-      dbCache = local;
+      dbCache = normalizeDb(local);
       return Promise.resolve(dbCache);
     }
     return fetchJSON(DB_URL).then(function (d) {
-      dbCache = d;
+      dbCache = normalizeDb(d);
       return dbCache;
     });
   }
@@ -48,8 +81,8 @@ Funzioni:
 
   function saveLocalCopy(db) {
     try {
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(db));
-      dbCache = db;
+      dbCache = normalizeDb(JSON.parse(JSON.stringify(db || {})));
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(dbCache));
       return true;
     } catch (e) {
       console.warn('Impossibile salvare localmente', e);
@@ -58,20 +91,25 @@ Funzioni:
   }
 
   function clearLocalCopy() {
-    localStorage.removeItem(LOCAL_KEY);
+    try {
+      localStorage.removeItem(LOCAL_KEY);
+    } catch (e) {}
     dbCache = null;
   }
 
   function getTable(id) {
     if (!dbCache || !dbCache.tables || !dbCache.tables.items) return null;
-    return dbCache.tables.items.find(function (t) { return t.id === Number(id); }) || null;
+    return dbCache.tables.items.find(function (t) {
+      return t.id === Number(id);
+    }) || null;
   }
 
   function findTableByName(q) {
     if (!dbCache || !dbCache.tables || !dbCache.tables.items) return null;
-    q = String(q).trim().toLowerCase();
+    q = String(q || '').trim().toLowerCase();
+    if (!q) return null;
     return dbCache.tables.items.find(function (t) {
-      return t.name.toLowerCase().indexOf(q) !== -1;
+      return String(t.name || '').toLowerCase().indexOf(q) !== -1;
     }) || null;
   }
 
@@ -85,35 +123,51 @@ Funzioni:
 
   function assignGuestToTable(guestFullName, tableId) {
     if (!dbCache) return false;
+    guestFullName = String(guestFullName || '').trim();
+    if (!guestFullName) return false;
+
     var t = getTable(tableId);
     if (!t) return false;
-    if (!t.guests) t.guests = [];
+    if (!Array.isArray(t.guests)) t.guests = [];
     if (t.guests.indexOf(guestFullName) !== -1) return false;
-    if (t.guests.length >= (dbCache.tables.seatsPerTable || 10)) return false;
+
+    var cap = (dbCache.tables && dbCache.tables.seatsPerTable) ? dbCache.tables.seatsPerTable : 10;
+    if (t.guests.length >= cap) return false;
+
     t.guests.push(guestFullName);
-    if (!dbCache.guests) dbCache.guests = [];
+    if (!Array.isArray(dbCache.guests)) dbCache.guests = [];
     if (dbCache.guests.indexOf(guestFullName) === -1) dbCache.guests.push(guestFullName);
+
     saveLocalCopy(dbCache);
     return true;
   }
 
   function unassignGuestFromTable(guestFullName) {
-    if (!dbCache) return false;
+    if (!dbCache || !dbCache.tables || !Array.isArray(dbCache.tables.items)) return false;
+    guestFullName = String(guestFullName || '').trim();
+    if (!guestFullName) return false;
+
     var removed = false;
     dbCache.tables.items.forEach(function (t) {
-      var idx = t.guests ? t.guests.indexOf(guestFullName) : -1;
+      if (!Array.isArray(t.guests)) t.guests = [];
+      var idx = t.guests.indexOf(guestFullName);
       if (idx !== -1) {
         t.guests.splice(idx, 1);
         removed = true;
       }
     });
+
     if (removed) saveLocalCopy(dbCache);
     return removed;
   }
 
   function addGuest(guestFullName) {
-    if (!dbCache) dbCache = { guests: [] };
-    if (!dbCache.guests) dbCache.guests = [];
+    guestFullName = String(guestFullName || '').trim();
+    if (!guestFullName) return false;
+
+    if (!dbCache) dbCache = normalizeDb({ tables: { items: [], seatsPerTable: 10 }, guests: [] });
+    if (!Array.isArray(dbCache.guests)) dbCache.guests = [];
+
     if (dbCache.guests.indexOf(guestFullName) === -1) {
       dbCache.guests.push(guestFullName);
       saveLocalCopy(dbCache);
@@ -123,9 +177,13 @@ Funzioni:
   }
 
   function removeGuest(guestFullName) {
-    if (!dbCache || !dbCache.guests) return false;
+    if (!dbCache || !Array.isArray(dbCache.guests)) return false;
+    guestFullName = String(guestFullName || '').trim();
+    if (!guestFullName) return false;
+
     var idx = dbCache.guests.indexOf(guestFullName);
     if (idx === -1) return false;
+
     dbCache.guests.splice(idx, 1);
     unassignGuestFromTable(guestFullName);
     saveLocalCopy(dbCache);
@@ -134,6 +192,7 @@ Funzioni:
 
   function syncToRemote() {
     if (!dbCache) return Promise.reject(new Error('Nessun DB caricato'));
+
     return fetch(JSONBIN_URL, {
       method: 'PUT',
       headers: {
@@ -161,7 +220,7 @@ Funzioni:
     addGuest: addGuest,
     removeGuest: removeGuest,
     syncToRemote: syncToRemote,
+    normalizeDb: normalizeDb,
     _rawUrl: DB_URL
   };
-
 })(window);
