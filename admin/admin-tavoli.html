@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* ── Admin Layout ── */
     .admin-login {
       min-height: 100vh;
       display: flex;
@@ -84,7 +83,6 @@
     }
     .login-error.visible { display: block; }
 
-    /* ── Admin Panel ── */
     .admin-panel { display: none; }
     .admin-panel.visible { display: block; }
 
@@ -125,7 +123,6 @@
       cursor: pointer;
     }
 
-    /* Tabs */
     .admin-tabs {
       display: flex;
       background: var(--aqua-mist);
@@ -155,7 +152,6 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ── Tab: Ospiti ── */
     .ospiti-section { padding: 24px 20px; }
     .section-head {
       display: flex;
@@ -251,7 +247,6 @@
     }
     .guest-del-btn:hover { color: #c62828; }
 
-    /* ── Tab: Tavoli ── */
     .tavoli-admin-section { padding: 20px; }
     .tavolo-admin-card {
       background: var(--white);
@@ -370,7 +365,6 @@
     }
     .unassign-btn:hover { color: #c62828; }
 
-    /* assign select */
     .assign-select {
       width: 100%;
       font-family: var(--font-body);
@@ -399,7 +393,6 @@
     }
     .assign-confirm-btn:hover { background: var(--aqua-deep); }
 
-    /* Save bar */
     .save-bar {
       position: sticky;
       bottom: 0;
@@ -431,7 +424,6 @@
     }
     .save-btn:active { transform: scale(0.97); }
 
-    /* Settings tab */
     .settings-section { padding: 24px 20px; }
     .settings-row {
       display: flex;
@@ -496,7 +488,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="admin-login" id="admin-login">
   <div class="login-card">
     <div class="login-icon">🔐</div>
@@ -513,9 +504,7 @@
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
 <div class="admin-panel" id="admin-panel">
-
   <div class="admin-header">
     <div>
       <div class="admin-header-title">🗂 Gestione Tavoli</div>
@@ -524,21 +513,18 @@
     <button class="logout-btn" id="logout-btn">🚪 Esci</button>
   </div>
 
-  <!-- Tabs -->
   <div class="admin-tabs">
     <button class="admin-tab active" data-tab="ospiti">👥 Ospiti</button>
     <button class="admin-tab" data-tab="tavoli">🪑 Tavoli</button>
     <button class="admin-tab" data-tab="impostazioni">⚙️ Config</button>
   </div>
 
-  <!-- Tab Ospiti -->
   <div class="tab-content active" id="tab-ospiti">
     <div class="ospiti-section">
       <div class="section-head">
         <div class="section-head-title">Lista Ospiti</div>
       </div>
 
-      <!-- Aggiungi ospite -->
       <div class="add-guest-row">
         <input class="guest-input" id="input-nome" type="text" placeholder="Nome" autocomplete="off">
         <input class="guest-input" id="input-cognome" type="text" placeholder="Cognome" autocomplete="off">
@@ -549,12 +535,10 @@
     </div>
   </div>
 
-  <!-- Tab Tavoli -->
   <div class="tab-content" id="tab-tavoli">
     <div class="tavoli-admin-section" id="tavoli-admin-list"></div>
   </div>
 
-  <!-- Tab Impostazioni -->
   <div class="tab-content" id="tab-impostazioni">
     <div class="settings-section">
       <div class="section-head">
@@ -573,352 +557,13 @@
     </div>
   </div>
 
-  <!-- Save bar -->
   <div class="save-bar">
     <div class="save-status" id="save-status">Modifiche non salvate</div>
     <button class="save-btn" id="save-btn">💾 Salva tutto</button>
   </div>
-
 </div>
 
-<script>
-  /* ════════════════════════════════════════
-     COSTANTI & STATO
-  ════════════════════════════════════════ */
-  var ADMIN_PWD = 'admin2026'; // ← cambia questa password!
-  var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
-  var dirty = false;
-
-  /* ════════════════════════════════════════
-     LOGIN
-  ════════════════════════════════════════ */
-  document.getElementById('login-btn').addEventListener('click', doLogin);
-  document.getElementById('pwd-input').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') doLogin();
-  });
-
-  function doLogin() {
-    var pwd = document.getElementById('pwd-input').value;
-    if (pwd === ADMIN_PWD) {
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-panel').classList.add('visible');
-      loadData();
-      renderAll();
-    } else {
-      document.getElementById('login-error').classList.add('visible');
-      document.getElementById('pwd-input').value = '';
-    }
-  }
-
-  document.getElementById('logout-btn').addEventListener('click', function(){
-    document.getElementById('admin-login').style.display = 'flex';
-    document.getElementById('admin-panel').classList.remove('visible');
-    document.getElementById('pwd-input').value = '';
-  });
-
-  /* ════════════════════════════════════════
-     TABS
-  ════════════════════════════════════════ */
-  document.querySelectorAll('.admin-tab').forEach(function(tab){
-    tab.addEventListener('click', function(){
-      document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
-      document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
-      tab.classList.add('active');
-      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-      if (tab.dataset.tab === 'tavoli') renderTavoliAdmin();
-    });
-  });
-
-  /* ════════════════════════════════════════
-     DATI
-  ════════════════════════════════════════ */
-  function loadData() {
-    try {
-      var raw = JSON.parse(localStorage.getItem('matrimonio_tavoli'));
-      if (raw) {
-        state.tavoli = raw.tavoli || [];
-        state.ospiti = raw.ospiti || [];
-        state.seatsPerTable = raw.seatsPerTable || 10;
-      } else {
-        initDefault(15, 10);
-      }
-    } catch(e) { initDefault(15, 10); }
-    document.getElementById('set-tavoli').value = state.tavoli.length;
-    document.getElementById('set-posti').value = state.seatsPerTable;
-  }
-
-  function initDefault(nTavoli, nPosti) {
-    state.tavoli = [];
-    state.ospiti = [];
-    state.seatsPerTable = nPosti;
-    for (var i = 1; i <= nTavoli; i++) {
-      state.tavoli.push({ id: i, nome: 'Tavolo ' + i, posti: [] });
-    }
-  }
-
-  function saveData() {
-    localStorage.setItem('matrimonio_tavoli', JSON.stringify({
-      tavoli: state.tavoli,
-      ospiti: state.ospiti,
-      seatsPerTable: state.seatsPerTable
-    }));
-    dirty = false;
-    document.getElementById('save-status').textContent = '✅ Salvato!';
-    setTimeout(function(){ document.getElementById('save-status').textContent = 'Tutto salvato'; }, 2000);
-  }
-
-  function markDirty() {
-    dirty = true;
-    document.getElementById('save-status').textContent = '● Modifiche non salvate';
-  }
-
-  document.getElementById('save-btn').addEventListener('click', saveData);
-
-  /* ════════════════════════════════════════
-     RENDER ALL
-  ════════════════════════════════════════ */
-  function renderAll() {
-    renderOspiti();
-    renderTavoliAdmin();
-  }
-
-  /* ════════════════════════════════════════
-     OSPITI
-  ════════════════════════════════════════ */
-  document.getElementById('add-guest-btn').addEventListener('click', addGuest);
-  document.getElementById('input-cognome').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') addGuest();
-  });
-
-  function addGuest() {
-    var nome = document.getElementById('input-nome').value.trim();
-    var cognome = document.getElementById('input-cognome').value.trim();
-    if (!nome && !cognome) return;
-    var fullName = (nome + ' ' + cognome).trim();
-   state.ospiti.push(fullName);
-    document.getElementById('input-nome').value = '';
-    document.getElementById('input-cognome').value = '';
-    document.getElementById('input-nome').focus();
-    markDirty();
-    renderOspiti();
-  }
-
-  function renderOspiti() {
-    var ul = document.getElementById('guest-list');
-    ul.innerHTML = '';
-    if (state.ospiti.length === 0) {
-      ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome e cognome qui sopra.</li>';
-      return;
-    }
-    state.ospiti.forEach(function(ospite){
-      var li = document.createElement('li');
-      li.className = 'guest-item';
-
-      var tavoloAssegnato = null;
-state.tavoli.forEach(function(t){
-  if ((t.guests || []).indexOf(ospite) !== -1) tavoloAssegnato = t;
-});
-
-      li.innerHTML =
-        '<span class="guest-item-name">' + escHtml(ospite) + '</span>' +
-        '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' +
-          (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.nome) : 'Non assegnato') +
-        '</span>' +
-        '<button class="guest-del-btn" title="Rimuovi ospite">✕</button>';
-
-      li.querySelector('.guest-del-btn').addEventListener('click', function(){
-        if (!confirm('Rimuovere ' + ospite.nome + '?')) return;
-        // Rimuovi da eventuali tavoli
-        state.tavoli.forEach(function(t){
-          var idx = t.posti.indexOf(ospite.nome);
-          if (idx !== -1) t.posti.splice(idx, 1);
-        });
-        state.ospiti = state.ospiti.filter(function(o){ return o.id !== ospite.id; });
-        markDirty();
-        renderOspiti();
-        renderTavoliAdmin();
-      });
-
-      ul.appendChild(li);
-    });
-  }
-
-  /* ════════════════════════════════════════
-     TAVOLI ADMIN
-  ════════════════════════════════════════ */
-  function renderTavoliAdmin() {
-    var container = document.getElementById('tavoli-admin-list');
-    container.innerHTML = '';
-
-    state.tavoli.forEach(function(tavolo){
-      var card = document.createElement('div');
-      card.className = 'tavolo-admin-card';
-      card.dataset.id = tavolo.id;
-
-      // Header cliccabile
-      var header = document.createElement('div');
-      header.className = 'tavolo-admin-header';
-      header.innerHTML =
-        '<div class="tavolo-admin-number">' + tavolo.id + '</div>' +
-        '<div class="tavolo-admin-name-wrap">' +
-          '<input class="tavolo-admin-name-input" type="text" value="' + escHtml(tavolo.nome) + '" placeholder="Nome tavolo">' +
-          '<div class="tavolo-admin-count">' + tavolo.posti.length + ' / ' + state.seatsPerTable + ' posti</div>' +
-        '</div>' +
-        '<span class="tavolo-toggle">▾</span>';
-
-      header.querySelector('.tavolo-admin-name-input').addEventListener('change', function(e){
-        tavolo.nome = e.target.value.trim() || ('Tavolo ' + tavolo.id);
-        markDirty();
-        renderOspiti();
-      });
-      // Impedisci click sull'input di aprire/chiudere
-      header.querySelector('.tavolo-admin-name-input').addEventListener('click', function(e){
-        e.stopPropagation();
-      });
-      header.addEventListener('click', function(){
-        card.classList.toggle('open');
-      });
-
-      // Body
-      var body = document.createElement('div');
-      body.className = 'tavolo-admin-body';
-
-      // Lista assegnati
-      var dropZone = document.createElement('div');
-      dropZone.className = 'drop-zone';
-      if (tavolo.posti.length === 0) {
-        dropZone.innerHTML = '<div class="drop-zone-hint">Nessun ospite assegnato a questo tavolo</div>';
-      } else {
-        tavolo.posti.forEach(function(nome){
-          if (!nome || !nome.trim()) return;
-          var ag = document.createElement('div');
-          ag.className = 'assigned-guest';
-          ag.innerHTML =
-            '<span class="assigned-guest-name">' + escHtml(nome) + '</span>' +
-            '<button class="unassign-btn" title="Rimuovi dal tavolo">✕</button>';
-          ag.querySelector('.unassign-btn').addEventListener('click', function(){
-            var idx = tavolo.posti.indexOf(nome);
-            if (idx !== -1) tavolo.posti.splice(idx, 1);
-            markDirty();
-            renderTavoliAdmin();
-            renderOspiti();
-          });
-          dropZone.appendChild(ag);
-        });
-      }
-
-      // Select per assegnare
-      var freeOspiti = getFreeOspiti();
-      if (freeOspiti.length > 0 && tavolo.posti.length < state.seatsPerTable) {
-        var sel = document.createElement('select');
-        sel.className = 'assign-select';
-        sel.innerHTML = '<option value="">-- Seleziona ospite da assegnare --</option>';
-        freeOspiti.forEach(function(o){
-          var opt = document.createElement('option');
-          opt.value = o.nome;
-          opt.textContent = o.nome;
-          sel.appendChild(opt);
-        });
-        var assignBtn = document.createElement('button');
-        assignBtn.className = 'assign-confirm-btn';
-        assignBtn.textContent = '+ Assegna al tavolo';
-        assignBtn.addEventListener('click', function(){
-          var val = sel.value;
-          if (!val) return;
-          if (tavolo.posti.length >= state.seatsPerTable) {
-            alert('Tavolo pieno! Massimo ' + state.seatsPerTable + ' posti.');
-            return;
-          }
-          tavolo.posti.push(val);
-          markDirty();
-          renderTavoliAdmin();
-          renderOspiti();
-        });
-        body.appendChild(dropZone);
-        body.appendChild(sel);
-        body.appendChild(assignBtn);
-      } else {
-        body.appendChild(dropZone);
-        if (tavolo.posti.length >= state.seatsPerTable) {
-          var fullMsg = document.createElement('div');
-          fullMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
-          fullMsg.textContent = '✅ Tavolo completo';
-          body.appendChild(fullMsg);
-        } else if (freeOspiti.length === 0) {
-          var noGuestMsg = document.createElement('div');
-          noGuestMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
-          noGuestMsg.textContent = 'Tutti gli ospiti sono già assegnati';
-          body.appendChild(noGuestMsg);
-        }
-      }
-
-      card.appendChild(header);
-      card.appendChild(body);
-      container.appendChild(card);
-    });
-  }
-
-  function getFreeOspiti() {
-    var assigned = [];
-    state.tavoli.forEach(function(t){
-      t.posti.forEach(function(p){ if (p) assigned.push(p); });
-    });
-    return state.ospiti.filter(function(o){
-      return assigned.indexOf(o.nome) === -1;
-    });
-  }
-
-  /* ════════════════════════════════════════
-     IMPOSTAZIONI
-  ════════════════════════════════════════ */
-  document.getElementById('apply-settings-btn').addEventListener('click', function(){
-    var nT = parseInt(document.getElementById('set-tavoli').value) || 15;
-    var nP = parseInt(document.getElementById('set-posti').value) || 10;
-    nT = Math.min(Math.max(nT, 1), 30);
-    nP = Math.min(Math.max(nP, 1), 20);
-
-    state.seatsPerTable = nP;
-
-    // Aggiungi tavoli mancanti
-    while (state.tavoli.length < nT) {
-      var nextId = state.tavoli.length + 1;
-      state.tavoli.push({ id: nextId, nome: 'Tavolo ' + nextId, posti: [] });
-    }
-    // Rimuovi tavoli in eccesso (avviso se hanno ospiti)
-    if (state.tavoli.length > nT) {
-      var toRemove = state.tavoli.slice(nT);
-      var hasGuests = toRemove.some(function(t){ return t.posti.length > 0; });
-      if (hasGuests) {
-        if (!confirm('Alcuni tavoli da rimuovere hanno ospiti assegnati. Continuare? Gli ospiti torneranno non assegnati.')) return;
-      }
-      state.tavoli = state.tavoli.slice(0, nT);
-    }
-
-    markDirty();
-    renderAll();
-    alert('✅ Configurazione applicata: ' + nT + ' tavoli, ' + nP + ' posti per tavolo.');
-  });
-
-  document.getElementById('reset-btn').addEventListener('click', function(){
-    if (!confirm('⚠️ ATTENZIONE: questo cancellerà TUTTI gli ospiti e le assegnazioni. Sei sicuro?')) return;
-    if (!confirm('Ultima conferma: cancellare davvero tutto?')) return;
-    localStorage.removeItem('matrimonio_tavoli');
-    initDefault(15, 10);
-    document.getElementById('set-tavoli').value = 15;
-    document.getElementById('set-posti').value = 10;
-    markDirty();
-    renderAll();
-  });
-
-  /* ════════════════════════════════════════
-     UTILITY
-  ════════════════════════════════════════ */
-  function escHtml(s) {
-    if (!s) return '';
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-</script>
-  <script src="matrimonio-db.js"></script>
+<script src="matrimonio-db.js"></script>
 <script>
   var ADMIN_PWD = 'admin2026';
   var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
@@ -939,25 +584,61 @@ state.tavoli.forEach(function(t){
     setSaveStatus('● Modifiche non salvate');
   }
 
-  function syncStateToDb() {
-    if (!window.MatrimonioDB || !MatrimonioDB.loadDB) return;
-    if (!MatrimonioDB._db) {}
+  function initDefault(nTavoli, nPosti) {
+    state.tavoli = [];
+    state.ospiti = [];
+    state.seatsPerTable = nPosti;
+    for (var i = 1; i <= nTavoli; i++) {
+      state.tavoli.push({ id: i, name: 'Tavolo ' + i, guests: [] });
+    }
+  }
+
+  function normalizeDb(db) {
+    if (!db) db = {};
+    if (!db.tables) db.tables = {};
+    if (!Array.isArray(db.tables.items)) db.tables.items = [];
+    if (typeof db.tables.seatsPerTable !== 'number') db.tables.seatsPerTable = 10;
+    if (!Array.isArray(db.guests)) db.guests = [];
+
+    db.tables.items.forEach(function(t, i) {
+      if (typeof t.id !== 'number') t.id = i + 1;
+      if (!t.name && t.nome) t.name = t.nome;
+      if (!t.name) t.name = 'Tavolo ' + t.id;
+      if (!Array.isArray(t.guests)) {
+        if (Array.isArray(t.posti)) t.guests = t.posti.slice();
+        else t.guests = [];
+      }
+    });
+
+    db.guests = db.guests.map(function(g) {
+      if (typeof g === 'string') return g;
+      if (g && typeof g === 'object') return (g.nome || g.name || '').trim();
+      return '';
+    }).filter(Boolean);
+
+    return db;
   }
 
   function loadData() {
     return MatrimonioDB.loadDB().then(function(db) {
-      state.tavoli = (db.tables && db.tables.items) ? JSON.parse(JSON.stringify(db.tables.items)) : [];
-      state.ospiti = (db.guests && Array.isArray(db.guests)) ? JSON.parse(JSON.stringify(db.guests)) : [];
-      state.seatsPerTable = (db.tables && db.tables.seatsPerTable) ? db.tables.seatsPerTable : 10;
+      db = normalizeDb(JSON.parse(JSON.stringify(db)));
+      state.tavoli = db.tables.items;
+      state.ospiti = db.guests;
+      state.seatsPerTable = db.tables.seatsPerTable || 10;
       document.getElementById('set-tavoli').value = state.tavoli.length || 15;
       document.getElementById('set-posti').value = state.seatsPerTable || 10;
       dbLoaded = true;
       return db;
+    }).catch(function() {
+      initDefault(15, 10);
+      document.getElementById('set-tavoli').value = 15;
+      document.getElementById('set-posti').value = 10;
+      dbLoaded = true;
     });
   }
 
   function buildDbFromState(baseDb) {
-    var db = JSON.parse(JSON.stringify(baseDb));
+    var db = normalizeDb(JSON.parse(JSON.stringify(baseDb || {})));
     db.tables.items = JSON.parse(JSON.stringify(state.tavoli));
     db.tables.count = state.tavoli.length;
     db.tables.seatsPerTable = state.seatsPerTable;
@@ -979,15 +660,6 @@ state.tavoli.forEach(function(t){
       setSaveStatus('Errore salvataggio');
       alert('Errore durante il salvataggio remoto.');
     });
-  }
-
-  function initDefault(nTavoli, nPosti) {
-    state.tavoli = [];
-    state.ospiti = [];
-    state.seatsPerTable = nPosti;
-    for (var i = 1; i <= nTavoli; i++) {
-      state.tavoli.push({ id: i, name: 'Tavolo ' + i, guests: [] });
-    }
   }
 
   function getFreeOspiti() {
@@ -1012,6 +684,7 @@ state.tavoli.forEach(function(t){
       ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome e cognome qui sopra.</li>';
       return;
     }
+
     state.ospiti.forEach(function(ospite){
       var li = document.createElement('li');
       li.className = 'guest-item';
@@ -1071,9 +744,11 @@ state.tavoli.forEach(function(t){
         markDirty();
         renderOspiti();
       });
+
       header.querySelector('.tavolo-admin-name-input').addEventListener('click', function(e){
         e.stopPropagation();
       });
+
       header.addEventListener('click', function(){
         card.classList.toggle('open');
       });
@@ -1083,6 +758,7 @@ state.tavoli.forEach(function(t){
 
       var dropZone = document.createElement('div');
       dropZone.className = 'drop-zone';
+
       if (tavolo.guests.length === 0) {
         dropZone.innerHTML = '<div class="drop-zone-hint">Nessun ospite assegnato a questo tavolo</div>';
       } else {
@@ -1115,6 +791,7 @@ state.tavoli.forEach(function(t){
           opt.textContent = o;
           sel.appendChild(opt);
         });
+
         var assignBtn = document.createElement('button');
         assignBtn.className = 'assign-confirm-btn';
         assignBtn.textContent = '+ Assegna al tavolo';
@@ -1130,11 +807,23 @@ state.tavoli.forEach(function(t){
           renderTavoliAdmin();
           renderOspiti();
         });
+
         body.appendChild(dropZone);
         body.appendChild(sel);
         body.appendChild(assignBtn);
       } else {
         body.appendChild(dropZone);
+        if (tavolo.guests.length >= state.seatsPerTable) {
+          var fullMsg = document.createElement('div');
+          fullMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
+          fullMsg.textContent = '✅ Tavolo completo';
+          body.appendChild(fullMsg);
+        } else if (freeOspiti.length === 0) {
+          var noGuestMsg = document.createElement('div');
+          noGuestMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
+          noGuestMsg.textContent = 'Tutti gli ospiti sono già assegnati';
+          body.appendChild(noGuestMsg);
+        }
       }
 
       card.appendChild(header);
@@ -1189,6 +878,7 @@ state.tavoli.forEach(function(t){
     var cognome = document.getElementById('input-cognome').value.trim();
     if (!nome && !cognome) return;
     var fullName = (nome + ' ' + cognome).trim();
+    if (state.ospiti.indexOf(fullName) !== -1) return;
     state.ospiti.push(fullName);
     document.getElementById('input-nome').value = '';
     document.getElementById('input-cognome').value = '';
@@ -1198,7 +888,8 @@ state.tavoli.forEach(function(t){
   }
 
   document.getElementById('save-btn').addEventListener('click', function(){
-    saveData();
+    var save = saveData();
+    if (save && save.catch) save.catch(function(){});
   });
 
   document.getElementById('apply-settings-btn').addEventListener('click', function(){
@@ -1216,7 +907,7 @@ state.tavoli.forEach(function(t){
 
     if (state.tavoli.length > nT) {
       var toRemove = state.tavoli.slice(nT);
-      var hasGuests = toRemove.some(function(t){ return t.guests.length > 0; });
+      var hasGuests = toRemove.some(function(t){ return (t.guests || []).length > 0; });
       if (hasGuests) {
         if (!confirm('Alcuni tavoli da rimuovere hanno ospiti assegnati. Continuare? Gli ospiti torneranno non assegnati.')) return;
       }
@@ -1225,11 +916,13 @@ state.tavoli.forEach(function(t){
 
     markDirty();
     renderAll();
+    alert('✅ Configurazione applicata: ' + nT + ' tavoli, ' + nP + ' posti per tavolo.');
   });
 
   document.getElementById('reset-btn').addEventListener('click', function(){
     if (!confirm('⚠️ ATTENZIONE: questo cancellerà TUTTI gli ospiti e le assegnazioni. Sei sicuro?')) return;
     if (!confirm('Ultima conferma: cancellare davvero tutto?')) return;
+
     initDefault(15, 10);
     document.getElementById('set-tavoli').value = 15;
     document.getElementById('set-posti').value = 10;
