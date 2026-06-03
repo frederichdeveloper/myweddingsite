@@ -14,7 +14,7 @@ Funzioni:
   var DB_URL = '/matrimonio-db.json';
   var LOCAL_KEY = 'matrimonio_db_local';
   var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6a200704f5f4af5e29b1d9d5';
-  var JSONBIN_KEY = '6a200704f5f4af5e29b1d9d5';
+  var JSONBIN_KEY = 'INSERISCI_LA_TUA_MASTER_KEY';
   var dbCache = null;
 
   function fetchJSON(url) {
