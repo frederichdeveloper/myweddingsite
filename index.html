@@ -331,7 +331,7 @@
 
   <!-- JAVASCRIPT -->
   <script>
-    sessionStorage.removeItem('site_role');
+    
     function loadComponent(url, targetId, callback) {
       fetch(url)
         .then(function(res) { return res.text(); })
@@ -398,6 +398,7 @@
     if (b2) b2.href = "https://wa.me/393935098068?text=" + msg;
 
     (function() {
+       //sessionStorage.removeItem('site_role'); /* ← resetta ad ogni caricamento */
       var allowed = sessionStorage.getItem('site_role');
       if (!allowed) {
         document.body.classList.add('role-lock');
