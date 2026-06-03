@@ -695,7 +695,7 @@
     var cognome = document.getElementById('input-cognome').value.trim();
     if (!nome && !cognome) return;
     var fullName = (nome + ' ' + cognome).trim();
-    state.ospiti.push({ id: Date.now(), nome: fullName, tavolo: null });
+   state.ospiti.push(fullName);
     document.getElementById('input-nome').value = '';
     document.getElementById('input-cognome').value = '';
     document.getElementById('input-nome').focus();
@@ -715,12 +715,12 @@
       li.className = 'guest-item';
 
       var tavoloAssegnato = null;
-      state.tavoli.forEach(function(t){
-        if (t.posti.indexOf(ospite.nome) !== -1) tavoloAssegnato = t;
-      });
+state.tavoli.forEach(function(t){
+  if ((t.guests || []).indexOf(ospite) !== -1) tavoloAssegnato = t;
+});
 
       li.innerHTML =
-        '<span class="guest-item-name">' + escHtml(ospite.nome) + '</span>' +
+        '<span class="guest-item-name">' + escHtml(ospite) + '</span>' +
         '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' +
           (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.nome) : 'Non assegnato') +
         '</span>' +
