@@ -1,0 +1,120 @@
+{
+"site": {
+"title": "Matrimonio 26 Luglio 2026 · Anzio",
+"date": "2026-07-26T18:00:00",
+"location": {
+"name": "Sunset House Events",
+"address": "Via Ardeatina 53, Anzio (RM)",
+"mapsUrl": "https://www.google.com/maps/place/Sunset+Events%2FTramonto+Eventi,+Via+Ardeatina,+53,+00042+Anzio+RM"
+},
+"rsvp": {
+"deadline": "2026-06-20",
+"whatsapp": [
+{
+"name": "Federico",
+"phone": "+393280567556"
+},
+{
+"name": "Sposa",
+"phone": "+393935098068"
+}
+]
+},
+"roleGate": {
+"adminPasswordHint": "admin2026",
+"sessionKey": "site_role"
+}
+},
+"tables": {
+"count": 15,
+"seatsPerTable": 10,
+"items": [
+{
+"id": 1,
+"name": "Tavolo 1",
+"guests": ]
+},
+{
+"id": 2,
+"name": "Tavolo 2",
+"guests": ]
+},
+{
+"id": 3,
+"name": "Tavolo 3",
+"guests": ]
+},
+{
+"id": 4,
+"name": "Tavolo 4",
+"guests": ]
+},
+{
+"id": 5,
+"name": "Tavolo 5",
+"guests": ]
+},
+{
+"id": 6,
+"name": "Tavolo 6",
+"guests": ]
+},
+{
+"id": 7,
+"name": "Tavolo 7",
+"guests": ]
+},
+{
+"id": 8,
+"name": "Tavolo 8",
+"guests": ]
+},
+{
+"id": 9,
+"name": "Tavolo 9",
+"guests": ]
+},
+{
+"id": 10,
+"name": "Tavolo 10",
+"guests": ]
+},
+{
+"id": 11,
+"name": "Tavolo 11",
+"guests": ]
+},
+{
+"id": 12,
+"name": "Tavolo 12",
+"guests": ]
+},
+{
+"id": 13,
+"name": "Tavolo 13",
+"guests": ]
+},
+{
+"id": 14,
+"name": "Tavolo 14",
+"guests": ]
+},
+{
+"id": 15,
+"name": "Tavolo 15",
+"guests": ]
+}
+]
+},
+"guests": [],
+"admin": {
+"users": [
+{
+"username": "admin",
+"role": "admin",
+"pages": [
+"admin-tavoli.html"
+]
+}
+]
+} }
