@@ -981,7 +981,6 @@ sezione VIDEO
   margin: 0 auto;
   border-radius: 22px;
   overflow: hidden;
-  background: #000;
   box-shadow: 0 16px 40px rgba(10, 79, 92, 0.18);
   border: 1px solid rgba(255,255,255,0.65);
 }
