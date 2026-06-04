@@ -951,3 +951,29 @@ body.menu-open {
   color: #b87333;
   margin-top: -6px;
 }
+
+
+/* ═══════════════════════════════════════════
+sezione VIDEO
+═══════════════════════════════════════════ */
+.section-video {
+  background: var(--white);
+  padding: 36px 28px;
+}
+
+.video-wrap {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(10, 79, 92, 0.12);
+  background: #000;
+}
+
+.yt-embed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
