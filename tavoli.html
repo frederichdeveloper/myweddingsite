@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  
   <style>
     .tavoli-hero{background:linear-gradient(135deg,var(--aqua-deep) 0%,var(--aqua-mid) 100%);padding:48px 28px 36px;text-align:center}.tavoli-hero-icon{font-size:48px;margin-bottom:12px}.tavoli-hero-title{font-family:var(--font-display);font-size:clamp(2rem,8vw,2.8rem);font-weight:600;font-style:italic;color:var(--white);margin-bottom:8px}.tavoli-hero-sub{font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--aqua-pale)}
     .search-section{background:var(--white);padding:32px 28px;border-bottom:1px solid var(--aqua-foam)}.search-label{font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--aqua-light);display:block;margin-bottom:10px}.search-row{display:flex;gap:10px;flex-wrap:wrap}.search-input{flex:1;min-width:0;font-family:var(--font-body);font-size:15px;font-weight:400;color:var(--text-dark);background:var(--aqua-mist);border:2px solid var(--aqua-foam);border-radius:12px;padding:14px 18px;outline:none;transition:border-color .2s}.search-input:focus{border-color:var(--aqua-light)}.search-input::placeholder{color:rgba(10,79,92,.35)}.search-btn{font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--text-dark);background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;padding:14px 24px;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 14px rgba(200,168,75,.3);white-space:nowrap;-webkit-tap-highlight-color:transparent}.search-btn:active{transform:scale(.97)}.search-hint{font-family:var(--font-body);font-size:11px;color:#8ab0b8;margin-top:10px}
@@ -96,6 +97,7 @@
       </div>
     </aside>
   </div>
+  <script src="matrimonio-db.js"></script>
   <script>
     function loadComponent(url, targetId, callback) {
       fetch(url).then(function(res) { return res.text(); }).then(function(html) { var el = document.getElementById(targetId); if (!el) return; el.innerHTML = html; if (callback) callback(); }).catch(function(err) { console.warn('Componente non caricato:', err); });
