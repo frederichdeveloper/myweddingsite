@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
   <style>
     .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--aqua-deep); padding: 24px; }
     .login-card { background: var(--white); border-radius: 20px; padding: 40px 32px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; }
@@ -137,7 +137,7 @@
     <button class="save-btn" id="save-btn">💾 Salva tutto</button>
   </div>
 </div>
-<script src="matrimonio-db.js"></script>
+<script src="../matrimonio-db.js"></script>
 <script>
   var ADMIN_PWD = 'admin2026';
   var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
@@ -212,6 +212,8 @@
   document.getElementById('apply-settings-btn').addEventListener('click', function(){ var nT = parseInt(document.getElementById('set-tavoli').value, 10) || 15; var nP = parseInt(document.getElementById('set-posti').value, 10) || 10; nT = Math.min(Math.max(nT, 1), 30); nP = Math.min(Math.max(nP, 1), 20); state.seatsPerTable = nP; while (state.tavoli.length < nT) { var nextId = state.tavoli.length + 1; state.tavoli.push({ id: nextId, name: 'Tavolo ' + nextId, guests: [] }); } if (state.tavoli.length > nT) { var toRemove = state.tavoli.slice(nT); var hasGuests = toRemove.some(function(t){ return (t.guests || []).length > 0; }); if (hasGuests) { if (!confirm('Alcuni tavoli da rimuovere hanno ospiti assegnati. Continuare? Gli ospiti torneranno non assegnati.')) return; } state.tavoli = state.tavoli.slice(0, nT); } markDirty(); renderAll(); alert('✅ Configurazione applicata: ' + nT + ' tavoli, ' + nP + ' posti per tavolo.'); });
   document.getElementById('reset-btn').addEventListener('click', function(){ if (!confirm('⚠️ ATTENZIONE: questo cancellerà TUTTI gli ospiti e le assegnazioni. Sei sicuro?')) return; if (!confirm('Ultima conferma: cancellare davvero tutto?')) return; initDefault(15, 10); document.getElementById('set-tavoli').value = 15; document.getElementById('set-posti').value = 10; markDirty(); renderAll(); });
   window.addEventListener('beforeunload', function(e){ if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+  loadComponent('../components/header.html', 'site-header', initNavHamburger);
+loadComponent('../components/footer.html', 'site-footer-slot', null);
 </script>
 </body>
 </html>
