@@ -926,11 +926,13 @@ html, body {
 .countdown-days {
   font-family: var(--font-display);
   font-size: clamp(4rem, 18vw, 6.5rem);
-  line-height: 1;
+  line-height: 0.8;
   font-weight: 600;
-  font-size: large;
   color: #b87333;
+  margin-top: -2rem; /* Sposta il testo verso l'alto (regola a piacimento, es: -20px, -3rem) */
+  display: inline-block; /* Serve a rendere efficaci i margini verticali se l'elemento è un <span> */
 }
+
 
 .countdown-sub {
   font-family: var(--font-display);
