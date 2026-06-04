@@ -1,46 +1,26 @@
- /*
-Funzioni:
-- loadDB(): fetch('/matrimonio-db.json') → ritorna oggetto DB
-- getTable(id): restituisce tavolo per id
-- findTableByName(q): cerca per nome
-- saveLocalCopy(db): salva una copia locale in localStorage (opzionale)
-- loadLocalCopy(): legge localStorage se presente (utile per testing)
-- assignGuestToTable(guestFullName, tableId): assegna (solo localmente)
-- unassignGuestFromTable(guestFullName): rimuove assegnamento (solo localmente)
-- addGuest(guestFullName): aggiunge ospite al DB locale
-- removeGuest(guestFullName): rimuove ospite dal DB locale
-- syncToRemote(): salvataggio remoto su JSONbin
-*/
-
 (function (global) {
-  var DB_URL = '/matrimonio-db.json';
+  var SCRIPT_URL = 'INCOLLA_QUI_URL_APPS_SCRIPT_EXEC';
   var LOCAL_KEY = 'matrimonio_db_local';
-  var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6a200704f5f4af5e29b1d9d5';
-  var JSONBIN_KEY = '6a200704f5f4af5e29b1d9d5';
   var dbCache = null;
-
-  function fetchJSON(url) {
-    return fetch(url, { cache: 'no-store' }).then(function (r) {
-      if (!r.ok) throw new Error('Impossibile caricare ' + url);
-      return r.json();
-    });
-  }
 
   function normalizeDb(db) {
     if (!db) db = {};
     if (!db.tables) db.tables = {};
     if (!Array.isArray(db.tables.items)) db.tables.items = [];
     if (typeof db.tables.seatsPerTable !== 'number') db.tables.seatsPerTable = 10;
+    if (typeof db.tables.count !== 'number') db.tables.count = db.tables.items.length;
     if (!Array.isArray(db.guests)) db.guests = [];
 
     db.tables.items.forEach(function (t, i) {
       if (typeof t.id !== 'number') t.id = i + 1;
       if (!t.name && t.nome) t.name = t.nome;
       if (!t.name) t.name = 'Tavolo ' + t.id;
+
       if (!Array.isArray(t.guests)) {
         if (Array.isArray(t.posti)) t.guests = t.posti.slice();
         else t.guests = [];
       }
+
       t.guests = t.guests.map(function (g) {
         if (typeof g === 'string') return g.trim();
         if (g && typeof g === 'object') return String(g.nome || g.name || '').trim();
@@ -54,26 +34,15 @@ Funzioni:
       return '';
     }).filter(Boolean);
 
+    db.tables.count = db.tables.items.length;
     return db;
-  }
-
-  function loadDB() {
-    var local = loadLocalCopy();
-    if (local) {
-      dbCache = normalizeDb(local);
-      return Promise.resolve(dbCache);
-    }
-    return fetchJSON(DB_URL).then(function (d) {
-      dbCache = normalizeDb(d);
-      return dbCache;
-    });
   }
 
   function loadLocalCopy() {
     try {
       var raw = localStorage.getItem(LOCAL_KEY);
       if (!raw) return null;
-      return JSON.parse(raw);
+      return normalizeDb(JSON.parse(raw));
     } catch (e) {
       return null;
     }
@@ -91,10 +60,61 @@ Funzioni:
   }
 
   function clearLocalCopy() {
-    try {
-      localStorage.removeItem(LOCAL_KEY);
-    } catch (e) {}
+    try { localStorage.removeItem(LOCAL_KEY); } catch (e) {}
     dbCache = null;
+  }
+
+  function loadDB() {
+    return fetch(SCRIPT_URL + '?action=load', {
+      method: 'GET',
+      cache: 'no-store',
+      redirect: 'follow'
+    })
+    .then(function (r) {
+      if (!r.ok) throw new Error('Errore caricamento DB');
+      return r.text();
+    })
+    .then(function (text) {
+      var data = JSON.parse(text);
+      dbCache = normalizeDb(data);
+      saveLocalCopy(dbCache);
+      return dbCache;
+    })
+    .catch(function (err) {
+      console.warn('Caricamento remoto fallito, uso cache locale', err);
+      var local = loadLocalCopy();
+      if (local) {
+        dbCache = local;
+        return dbCache;
+      }
+      dbCache = normalizeDb({ tables: { items: [], seatsPerTable: 10, count: 0 }, guests: [] });
+      return dbCache;
+    });
+  }
+
+  function syncToRemote(db) {
+    var payload = normalizeDb(JSON.parse(JSON.stringify(db || dbCache || {})));
+    dbCache = payload;
+    saveLocalCopy(payload);
+
+    return fetch(SCRIPT_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'save',
+        db: payload
+      })
+    })
+    .then(function (r) {
+      if (!r.ok) throw new Error('Errore salvataggio remoto');
+      return r.text();
+    })
+    .then(function (text) {
+      return JSON.parse(text);
+    });
   }
 
   function getTable(id) {
@@ -165,15 +185,17 @@ Funzioni:
     guestFullName = String(guestFullName || '').trim();
     if (!guestFullName) return false;
 
-    if (!dbCache) dbCache = normalizeDb({ tables: { items: [], seatsPerTable: 10 }, guests: [] });
-    if (!Array.isArray(dbCache.guests)) dbCache.guests = [];
+    if (!dbCache) dbCache = normalizeDb({
+      tables: { items: [], seatsPerTable: 10, count: 0 },
+      guests: []
+    });
 
-    if (dbCache.guests.indexOf(guestFullName) === -1) {
-      dbCache.guests.push(guestFullName);
-      saveLocalCopy(dbCache);
-      return true;
-    }
-    return false;
+    if (!Array.isArray(dbCache.guests)) dbCache.guests = [];
+    if (dbCache.guests.indexOf(guestFullName) !== -1) return false;
+
+    dbCache.guests.push(guestFullName);
+    saveLocalCopy(dbCache);
+    return true;
   }
 
   function removeGuest(guestFullName) {
@@ -190,22 +212,6 @@ Funzioni:
     return true;
   }
 
-  function syncToRemote() {
-    if (!dbCache) return Promise.reject(new Error('Nessun DB caricato'));
-
-    return fetch(JSONBIN_URL, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': JSONBIN_KEY
-      },
-      body: JSON.stringify(dbCache)
-    }).then(function (r) {
-      if (!r.ok) throw new Error('Errore salvataggio JSONbin');
-      return r.json();
-    });
-  }
-
   global.MatrimonioDB = {
     loadDB: loadDB,
     loadLocalCopy: loadLocalCopy,
@@ -220,7 +226,6 @@ Funzioni:
     addGuest: addGuest,
     removeGuest: removeGuest,
     syncToRemote: syncToRemote,
-    normalizeDb: normalizeDb,
-    _rawUrl: DB_URL
+    normalizeDb: normalizeDb
   };
 })(window);
