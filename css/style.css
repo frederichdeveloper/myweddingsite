@@ -127,7 +127,7 @@ html, body {
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .site-header,
   header {
     position: static !important;
@@ -999,7 +999,7 @@ sezione VIDEO
   border: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .section-video {
     padding: 28px 16px 32px;
   }
