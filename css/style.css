@@ -929,7 +929,7 @@ html, body {
   line-height: 0.8;
   font-weight: 600;
   color: #b87333;
-  margin-top: -2rem; /* Sposta il testo verso l'alto (regola a piacimento, es: -20px, -3rem) */
+  margin-top: -9rem; /* Sposta il testo verso l'alto (regola a piacimento, es: -20px, -3rem) */
   display: inline-block; /* Serve a rendere efficaci i margini verticali se l'elemento è un <span> */
 }
 
