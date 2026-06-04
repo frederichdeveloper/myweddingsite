@@ -928,6 +928,7 @@ html, body {
   font-size: clamp(4rem, 18vw, 6.5rem);
   line-height: 1;
   font-weight: 600;
+  font-size: large;
   color: #b87333;
 }
 
