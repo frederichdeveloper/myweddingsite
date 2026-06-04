@@ -102,12 +102,50 @@
     function loadComponent(url, targetId, callback) {
       fetch(url).then(function(res) { return res.text(); }).then(function(html) { var el = document.getElementById(targetId); if (!el) return; el.innerHTML = html; if (callback) callback(); }).catch(function(err) { console.warn('Componente non caricato:', err); });
     }
-    function initNavHamburger() {
-      var btn = document.getElementById('nav-toggle'); var menu = document.getElementById('mobile-menu'); var overlay = document.getElementById('mobile-overlay'); if (!btn || !menu || !overlay) { setTimeout(initNavHamburger, 100); return; }
-      function closeMenu() { btn.classList.remove('open'); menu.classList.remove('open'); overlay.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-hidden', 'true'); }
-      btn.addEventListener('click', function() { var isOpen = menu.classList.toggle('open'); btn.classList.toggle('open'); overlay.classList.toggle('open'); btn.setAttribute('aria-expanded', String(isOpen)); menu.setAttribute('aria-hidden', String(!isOpen)); });
-      overlay.addEventListener('click', closeMenu); document.querySelectorAll('.mobile-link').forEach(function(a) { a.addEventListener('click', closeMenu); });
-    }
+  function initNavHamburger() {
+  var btn = document.getElementById('nav-toggle');
+  var menu = document.getElementById('mobile-menu');
+  var overlay = document.getElementById('mobile-overlay');
+  if (!btn || !menu || !overlay) { setTimeout(initNavHamburger, 100); return; }
+
+  function closeMenu() {
+    btn.classList.remove('open');
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('menu-open');
+  }
+
+  function openMenu() {
+    btn.classList.add('open');
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    menu.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('menu-open');
+  }
+
+  btn.addEventListener('click', function() {
+    var isOpen = menu.classList.contains('open');
+    if (isOpen) closeMenu();
+    else openMenu();
+  });
+
+  overlay.addEventListener('click', closeMenu);
+
+  document.querySelectorAll('.mobile-link').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
+
+  window.addEventListener('scroll', function() {
+    if (menu.classList.contains('open')) closeMenu();
+  }, { passive: true });
+
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) closeMenu();
+  });
+}
     loadComponent('components/header.html', 'site-header', initNavHamburger);
     loadComponent('components/footer.html', 'site-footer-slot', null);
     var data = null, SEATS_PER_TABLE = 10;

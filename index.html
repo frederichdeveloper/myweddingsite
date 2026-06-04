@@ -225,7 +225,50 @@
 
   <script>
     function loadComponent(url, targetId, callback) { fetch(url).then(function(res) { return res.text(); }).then(function(html) { var el = document.getElementById(targetId); if (!el) return; el.innerHTML = html; if (callback) callback(); }).catch(function(err) { console.warn('Componente non caricato:', err); }); }
-    function initNavHamburger() { var btn = document.getElementById('nav-toggle'); var menu = document.getElementById('mobile-menu'); var overlay = document.getElementById('mobile-overlay'); if (!btn || !menu || !overlay) { setTimeout(initNavHamburger, 100); return; } function closeMenu() { btn.classList.remove('open'); menu.classList.remove('open'); overlay.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-hidden', 'true'); } btn.addEventListener('click', function() { var isOpen = menu.classList.toggle('open'); btn.classList.toggle('open'); overlay.classList.toggle('open'); btn.setAttribute('aria-expanded', String(isOpen)); menu.setAttribute('aria-hidden', String(!isOpen)); }); overlay.addEventListener('click', closeMenu); document.querySelectorAll('.mobile-link').forEach(function(a) { a.addEventListener('click', closeMenu); }); }
+   function initNavHamburger() {
+  var btn = document.getElementById('nav-toggle');
+  var menu = document.getElementById('mobile-menu');
+  var overlay = document.getElementById('mobile-overlay');
+  if (!btn || !menu || !overlay) { setTimeout(initNavHamburger, 100); return; }
+
+  function closeMenu() {
+    btn.classList.remove('open');
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('menu-open');
+  }
+
+  function openMenu() {
+    btn.classList.add('open');
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    menu.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('menu-open');
+  }
+
+  btn.addEventListener('click', function() {
+    var isOpen = menu.classList.contains('open');
+    if (isOpen) closeMenu();
+    else openMenu();
+  });
+
+  overlay.addEventListener('click', closeMenu);
+
+  document.querySelectorAll('.mobile-link').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
+
+  window.addEventListener('scroll', function() {
+    if (menu.classList.contains('open')) closeMenu();
+  }, { passive: true });
+
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) closeMenu();
+  });
+}
     loadComponent('components/header.html', 'site-header', initNavHamburger); loadComponent('components/footer.html', 'site-footer-slot', null);
     var wedding = new Date('2026-07-26T18:00:00'); function updateCountdown() { var diff = wedding - new Date(); if (diff > 0) { var el = document.getElementById('sidebar-days'); if (el) el.textContent = Math.floor(diff / (1000 * 60 * 60 * 24)); } } updateCountdown(); setInterval(updateCountdown, 60000);
     var msg = encodeURIComponent("Ciao! 🎊\n\nHo ricevuto il vostro invito per il matrimonio del 26 Luglio 2026.\n\n✅ CONFERMO la mia partecipazione!\n\nNon vedo l'ora di festeggiare con voi! 🥂🌊"); var b1 = document.getElementById('rsvp-btn'); var b2 = document.getElementById('rsvp-btn-2'); if (b1) b1.href = "https://wa.me/393280567556?text=" + msg; if (b2) b2.href = "https://wa.me/393935098068?text=" + msg;

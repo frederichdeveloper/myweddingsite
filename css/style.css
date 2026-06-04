@@ -733,6 +733,16 @@ html, body {
   .mobile-menu, .mobile-menu-overlay { display: none !important; }
 }
 
+body.menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
+#mobile-menu,
+#mobile-overlay {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
 /* ═══════════════════════════════════════════
    FFECCIA SU
 ═══════════════════════════════════════════ */
