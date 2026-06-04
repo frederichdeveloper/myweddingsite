@@ -978,6 +978,7 @@ sezione VIDEO
 }
 
 .video-wrap {
+  position: relative;
   width: 100%;
   max-width: 560px;
   margin: 0 auto;
@@ -985,19 +986,16 @@ sezione VIDEO
   overflow: hidden;
   box-shadow: 0 16px 40px rgba(10, 79, 92, 0.18);
   border: 1px solid rgba(255,255,255,0.65);
-}
-
-.video-wrap::before {
-  content: '';
-  display: block;
-  padding-top: 56.25%;
+  aspect-ratio: 16 / 9;
 }
 
 .yt-embed {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
+  display: block;
 }
 
 @media (max-width: 860px) {
