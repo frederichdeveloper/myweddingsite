@@ -127,6 +127,20 @@ html, body {
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  .site-header,
+  header {
+    position: static !important;
+    top: auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .site-wrapper {
+    padding-top: 0 !important;
+  }
+}
+
 /* ═══════════════════════════════════════════
    LAYOUT WRAPPER
 ═══════════════════════════════════════════ */
