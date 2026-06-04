@@ -1,5 +1,5 @@
 (function (global) {
-  var SCRIPT_URL = 'https://script.google.com/u/3/home/projects/1IBHgwOQN0AG1Bynv8HDxwxpx2m04T9Ifu-6B7BzyB6-wptLZa9bNinO9/edit?hl=it';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7sBJCme08YlGCJchKxldy0yVSUwkIfUK79OolP4N0ynBHjSjlcIBX_z0NE2g4IXXOSQ/exec';
   var LOCAL_KEY = 'matrimonio_db_local';
   var dbCache = null;
 
