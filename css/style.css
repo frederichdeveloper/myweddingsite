@@ -925,7 +925,7 @@ html, body {
 
 .countdown-days {
   font-family: var(--font-display);
-  font-size: clamp(4rem, 18vw, 6.5rem);
+  font-size: clamp(15rem, 18vw, 6.5rem);
   line-height: 0.8;
   font-weight: 600;
   color: #b87333;
