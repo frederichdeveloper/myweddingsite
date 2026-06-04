@@ -120,10 +120,13 @@ html, body {
    #SITE-HEADER — contenitore sticky
 ═══════════════════════════════════════════ */
 #site-header {
-  position: -webkit-sticky;
   position: sticky;
   top: 0;
+  z-index: 1000;
   width: 100%;
+  background: #fff;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 @media (max-width: 860px) {
