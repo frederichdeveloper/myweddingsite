@@ -24,10 +24,10 @@
     <strong>Vi aspettiamo!</strong>
   </div>
   <nav class="footer-links" aria-label="Footer navigation">
-    <a href="index.html#cerimonia" class="footer-link">Cerimonia</a>
-    <a href="index.html#dresscode" class="footer-link">Dress Code</a>
-    <a href="index.html#location"  class="footer-link">Location</a>
-    <a href="index.html#rsvp"      class="footer-link">Conferma</a>
+    <a href="#cerimonia" class="footer-link">Cerimonia</a>
+    <a href="#dresscode" class="footer-link">Dress Code</a>
+    <a href="#location"  class="footer-link">Location</a>
+    <a href="#rsvp"      class="footer-link">Conferma</a>
   </nav>
   <div class="footer-date-stamp">26 · 07 · 2026 · Anzio · Roma</div>
 </footer>
@@ -37,7 +37,7 @@
   (function() {
     var sf = document.createElement('footer');
     sf.className = 'site-footer';
-    sf.innerHTML = '<p>Matrimonio 26 Luglio 2026 &middot; Sunset House Events &middot; Via Ardeatina 53, Anzio (RM) &middot; <a href="index.html#rsvp" style="color:rgba(255,255,255,0.4);text-decoration:none;">RSVP</a></p>';
+    sf.innerHTML = '<p>Matrimonio 26 Luglio 2026 &middot; Sunset House Events &middot; Via Ardeatina 53, Anzio (RM) &middot; <a href="#rsvp" style="color:rgba(255,255,255,0.4);text-decoration:none;">RSVP</a></p>';
     var wrapper = document.querySelector('.site-wrapper');
     if (wrapper && wrapper.parentNode) {
       wrapper.parentNode.insertBefore(sf, wrapper.nextSibling);
