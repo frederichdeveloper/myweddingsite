@@ -1019,3 +1019,87 @@ sezione VIDEO
     border-radius: 16px;
   }
 }
+
+.hero-img-wrap {
+  position: relative;
+}
+
+
+
+
+
+/* ═══════════════════════════════════════════
+COUNTDOW 
+═══════════════════════════════════════════ */
+
+.countdown-box {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(10, 79, 92, 0.12);
+  border: 1px solid rgba(91, 191, 204, 0.25);
+  z-index: 5;
+}
+
+.countdown-item {
+  min-width: 56px;
+  text-align: center;
+}
+
+.countdown-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #0a4f5c;
+  line-height: 1;
+}
+
+.countdown-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1a7a8a;
+  margin-top: 3px;
+}
+
+.countdown-sep {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  color: #5bbfcc;
+  opacity: 0.9;
+  transform: translateY(-6px);
+}
+
+@media (max-width: 480px) {
+  .countdown-box {
+    bottom: 8%;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .countdown-item {
+    min-width: 46px;
+  }
+
+  .countdown-number {
+    font-size: 1.6rem;
+  }
+
+  .countdown-label {
+    font-size: 0.58rem;
+  }
+
+  .countdown-sep {
+    font-size: 1.3rem;
+  }
+}
