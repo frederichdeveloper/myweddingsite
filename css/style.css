@@ -1097,6 +1097,9 @@ body.menu-open {
   text-transform: uppercase;
   color: #0d3540;
   margin-bottom: 6px;
+  transform: translateY(20px); /* Solleva il blocco di 15 pixel */
+   font-size: 10px;
+  font-weight: bold; /* Rende la scritta in grassetto */
 }
 
 .countdown-time {
