@@ -1101,10 +1101,12 @@ body.menu-open {
 
 .countdown-time {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-end; 
   justify-content: center;
   gap: 8px;
+  transform: translateY(-15px); /* Solleva il blocco di 15 pixel */
 }
+
 
 .countdown-part {
   display: flex;
