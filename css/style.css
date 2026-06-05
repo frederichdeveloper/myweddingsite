@@ -1134,10 +1134,12 @@ body.menu-open {
 .countdown-part small {
   margin-top: 2px;
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #0d3540;
+  transform: translateY(10px); /* Solleva il blocco di 15 pixel */
+  font-weight: bold; /* Rende la scritta in grassetto */
 }
 
 .countdown-sep {
@@ -1179,6 +1181,19 @@ body.menu-open {
 
   .countdown-sep {
     font-size: 1.4rem;
+  }
+
+  .countdow-days{
+    transform: translateY(10px); /* Solleva il blocco di 15 pixel */
+  font-weight: bold; /* Rende la scritta in grassetto */
+  }
+  .countdow-hours{
+    transform: translateY(10px); /* Solleva il blocco di 15 pixel */
+  font-weight: bold; /* Rende la scritta in grassetto */
+  }
+  .countdow-minutes{
+    transform: translateY(10px); /* Solleva il blocco di 15 pixel */
+  font-weight: bold; /* Rende la scritta in grassetto */
   }
 }
 
