@@ -1125,7 +1125,7 @@ body.menu-open {
 
 .countdown-part span {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 12vw, 4.6rem);
+  font-size: clamp(6.5rem, 15vw, 6.5rem);
   line-height: 1;
   font-weight: 600;
   color: #b87333;
