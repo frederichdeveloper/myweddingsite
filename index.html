@@ -211,7 +211,7 @@
     </h2>
     <p style="font-family:'Montserrat',sans-serif; font-size:13px; color:#4f6f76;
         line-height:1.65; margin-bottom:22px;">
-      Indica quante persone parteciperanno, poi inserisci i loro nomi.
+      Indica quanti invitati parteciperanno, poi inserisci i loro nomi.
     </p>
 
     <!-- STEP 1: numero persone -->
@@ -219,7 +219,7 @@
       <label style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600;
              letter-spacing:0.14em; text-transform:uppercase; color:#1a7a8a;
              display:block; margin-bottom:8px;">
-        Quante persone?
+        Quanti invitati?
       </label>
       <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:22px;">
         <button id="rsvp-minus" type="button"
@@ -302,18 +302,18 @@
     var errMsg    = document.getElementById('rsvp-modal-error');
 
     var waTarget  = '';
-    var persone   = 1;
+    var invitato   = 1;
     var MAX       = 12;
 
     function updateCounter() {
-      countDisp.textContent = persone;
-      btnMinus.style.opacity = persone <= 1 ? '0.3' : '1';
-      btnPlus.style.opacity  = persone >= MAX ? '0.3' : '1';
+      countDisp.textContent = invitato;
+      btnMinus.style.opacity = invitato <= 1 ? '0.3' : '1';
+      btnPlus.style.opacity  = invitato >= MAX ? '0.3' : '1';
     }
 
     function buildNameFields() {
       namesList.innerHTML = '';
-      for (var i = 0; i < persone; i++) {
+      for (var i = 0; i < invitato; i++) {
         var label = document.createElement('p');
         label.style.cssText = 'font-family:\'Montserrat\',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#5bbfcc; text-align:left; margin:14px 0 6px;';
         label.textContent = 'Invitato ' + (i + 1);
@@ -346,7 +346,7 @@
 
     function buildMsg() {
       var nomi = [];
-      for (var i = 0; i < persone; i++) {
+      for (var i = 0; i < invitato; i++) {
         var n = (document.getElementById('rsvp-nome-' + i).value.trim());
         var c = (document.getElementById('rsvp-cogn-' + i).value.trim());
         var full = (n + ' ' + c).trim();
@@ -359,7 +359,7 @@
 
       return encodeURIComponent(
         'Ciao! 🎊\n\n' +
-        'Siamo ' + persone + ' person' + (persone === 1 ? 'a' : 'e') + ':\n' +
+        'Siamo ' + invitato + ' invitat' + (invitato === 1 ? 'o' : 'i') + ':\n' +
         listaStr + '\n\n' +
         'Abbiamo ricevuto il vostro invito per il matrimonio del 26 Luglio 2026.\n\n' +
         '✅ CONFERMIAMO la nostra partecipazione!\n\n' +
@@ -369,7 +369,7 @@
 
     function openModal(target) {
       waTarget = target;
-      persone = 1;
+      invitato = 1;
       updateCounter();
       step1.style.display = 'block';
       step2.style.display = 'none';
@@ -392,8 +392,8 @@
     }
 
     // Contatore ±
-    btnMinus.addEventListener('click', function() { if (persone > 1) { persone--; updateCounter(); } });
-    btnPlus.addEventListener('click',  function() { if (persone < MAX) { persone++; updateCounter(); } });
+    btnMinus.addEventListener('click', function() { if (invitato > 1) { invitato--; updateCounter(); } });
+    btnPlus.addEventListener('click',  function() { if (invitato < MAX) { invitato++; updateCounter(); } });
 
     // Step 1 → Step 2
     btnNext.addEventListener('click', goToStep2);
