@@ -189,14 +189,14 @@
     </aside>
   </div>
 
-  <!-- ═══ CONFERMA NAME MODAL ═══ -->
+ <!-- ═══ RSVP NAME MODAL ═══ -->
 <div id="rsvp-modal-overlay" style="display:none; position:fixed; inset:0; z-index:6000;
      background:rgba(6,28,33,0.72); backdrop-filter:blur(14px);
      align-items:center; justify-content:center; padding:24px;">
-  <div style="width:100%; max-width:420px; border-radius:24px; padding:32px 24px;
+  <div id="rsvp-modal-box" style="width:100%; max-width:420px; border-radius:24px; padding:32px 24px;
        background:linear-gradient(160deg,rgba(255,255,255,0.99),rgba(245,249,250,0.97));
        box-shadow:0 24px 80px rgba(0,0,0,0.35); border:1px solid rgba(200,168,75,0.18);
-       text-align:center;">
+       text-align:center; max-height:90vh; overflow-y:auto;">
 
     <div style="display:inline-block; margin-bottom:14px; padding:6px 14px;
          border-radius:999px; background:linear-gradient(135deg,#c8a84b,#e8cc80);
@@ -211,71 +211,170 @@
     </h2>
     <p style="font-family:'Montserrat',sans-serif; font-size:13px; color:#4f6f76;
         line-height:1.65; margin-bottom:22px;">
-      Inserisci il tuo nome così da personalizzare il messaggio di conferma.
+      Indica quante persone parteciperanno, poi inserisci i loro nomi.
     </p>
 
-    <input id="rsvp-nome" type="text" placeholder="Nome *"
-      style="width:100%; margin-bottom:10px; border:2px solid #d6f0f4; border-radius:14px;
-             padding:14px 16px; font-family:'Montserrat',sans-serif; font-size:15px;
-             color:#0d3540; background:#eef8fa; outline:none; box-sizing:border-box;">
+    <!-- STEP 1: numero persone -->
+    <div id="rsvp-step-1">
+      <label style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600;
+             letter-spacing:0.14em; text-transform:uppercase; color:#1a7a8a;
+             display:block; margin-bottom:8px;">
+        Quante persone?
+      </label>
+      <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:22px;">
+        <button id="rsvp-minus" type="button"
+          style="width:44px; height:44px; border-radius:50%; border:2px solid #d6f0f4;
+                 background:#eef8fa; color:#0a4f5c; font-size:22px; font-weight:600;
+                 cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center;">−</button>
+        <span id="rsvp-count-display"
+          style="font-family:'Cormorant Garamond',serif; font-size:2.8rem;
+                 font-weight:600; color:#0a4f5c; min-width:50px; text-align:center; line-height:1;">1</span>
+        <button id="rsvp-plus" type="button"
+          style="width:44px; height:44px; border-radius:50%; border:2px solid #d6f0f4;
+                 background:#eef8fa; color:#0a4f5c; font-size:22px; font-weight:600;
+                 cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center;">+</button>
+      </div>
+      <button id="rsvp-step1-next"
+        style="width:100%; border:none; border-radius:14px; padding:15px 18px;
+               background:linear-gradient(135deg,#0a4f5c,#1a7a8a); color:#fff;
+               font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700;
+               letter-spacing:0.1em; cursor:pointer; margin-bottom:10px;
+               box-shadow:0 8px 24px rgba(10,79,92,0.22);">
+        AVANTI →
+      </button>
+      <button id="rsvp-modal-cancel"
+        style="width:100%; border:1px solid rgba(26,122,138,0.2); border-radius:14px;
+               padding:13px 18px; background:transparent; color:#1a7a8a;
+               font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600;
+               letter-spacing:0.1em; cursor:pointer;">
+        ANNULLA
+      </button>
+    </div>
 
-    <input id="rsvp-cognome" type="text" placeholder="Cognome *"
-      style="width:100%; margin-bottom:10px; border:2px solid #d6f0f4; border-radius:14px;
-             padding:14px 16px; font-family:'Montserrat',sans-serif; font-size:15px;
-             color:#0d3540; background:#eef8fa; outline:none; box-sizing:border-box;">
+    <!-- STEP 2: nomi dinamici -->
+    <div id="rsvp-step-2" style="display:none;">
+      <p style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600;
+          letter-spacing:0.14em; text-transform:uppercase; color:#1a7a8a; margin-bottom:16px;">
+        Inserisci i nomi dei partecipanti
+      </p>
+      <div id="rsvp-names-list"></div>
 
-    <input id="rsvp-ospiti" type="number" min="1" max="10" placeholder="N° persone (opzionale)"
-      style="width:100%; margin-bottom:18px; border:2px solid #d6f0f4; border-radius:14px;
-             padding:14px 16px; font-family:'Montserrat',sans-serif; font-size:15px;
-             color:#0d3540; background:#eef8fa; outline:none; box-sizing:border-box;">
+      <p id="rsvp-modal-error"
+         style="display:none; color:#c62828; font-family:'Montserrat',sans-serif;
+                font-size:12px; margin-bottom:12px;">
+        ⚠️ Inserisci almeno il nome della prima persona.
+      </p>
 
-    <p id="rsvp-modal-error"
-       style="display:none; color:#c62828; font-family:'Montserrat',sans-serif;
-              font-size:12px; margin-bottom:12px;">
-      ⚠️ Inserisci almeno il nome per continuare.
-    </p>
+      <button id="rsvp-modal-confirm"
+        style="width:100%; border:none; border-radius:14px; padding:16px 18px;
+               background:linear-gradient(135deg,#25D366,#128C7E); color:#fff;
+               font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700;
+               letter-spacing:0.08em; cursor:pointer; margin-bottom:10px;
+               box-shadow:0 8px 24px rgba(37,211,102,0.3);">
+        ✅ Continua su WhatsApp
+      </button>
 
-    <button id="rsvp-modal-confirm"
-      style="width:100%; border:none; border-radius:14px; padding:16px 18px;
-             background:linear-gradient(135deg,#25D366,#128C7E); color:#fff;
-             font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700;
-             letter-spacing:0.08em; cursor:pointer; margin-bottom:10px;
-             box-shadow:0 8px 24px rgba(37,211,102,0.3);">
-      ✅ Continua su WhatsApp
-    </button>
+      <button id="rsvp-step2-back"
+        style="width:100%; border:1px solid rgba(26,122,138,0.2); border-radius:14px;
+               padding:13px 18px; background:transparent; color:#1a7a8a;
+               font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600;
+               letter-spacing:0.1em; cursor:pointer;">
+        ← INDIETRO
+      </button>
+    </div>
 
-    <button id="rsvp-modal-cancel"
-      style="width:100%; border:1px solid rgba(26,122,138,0.2); border-radius:14px;
-             padding:13px 18px; background:transparent; color:#1a7a8a;
-             font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600;
-             letter-spacing:0.1em; cursor:pointer;">
-      ANNULLA
-    </button>
   </div>
-</div>
 
 
 <script>
   (function () {
-    var modal    = document.getElementById('rsvp-modal-overlay');
-    var btnConf  = document.getElementById('rsvp-modal-confirm');
-    var btnCanc  = document.getElementById('rsvp-modal-cancel');
-    var inpNome  = document.getElementById('rsvp-nome');
-    var inpCogn  = document.getElementById('rsvp-cognome');
-    var inpOsp   = document.getElementById('rsvp-ospiti');
-    var errMsg   = document.getElementById('rsvp-modal-error');
+    var modal     = document.getElementById('rsvp-modal-overlay');
+    var step1     = document.getElementById('rsvp-step-1');
+    var step2     = document.getElementById('rsvp-step-2');
+    var namesList = document.getElementById('rsvp-names-list');
+    var countDisp = document.getElementById('rsvp-count-display');
+    var btnMinus  = document.getElementById('rsvp-minus');
+    var btnPlus   = document.getElementById('rsvp-plus');
+    var btnNext   = document.getElementById('rsvp-step1-next');
+    var btnBack   = document.getElementById('rsvp-step2-back');
+    var btnConf   = document.getElementById('rsvp-modal-confirm');
+    var btnCanc   = document.getElementById('rsvp-modal-cancel');
+    var errMsg    = document.getElementById('rsvp-modal-error');
 
-    var waTarget = ''; // numero WA scelto
+    var waTarget  = '';
+    var persone   = 1;
+    var MAX       = 12;
+
+    function updateCounter() {
+      countDisp.textContent = persone;
+      btnMinus.style.opacity = persone <= 1 ? '0.3' : '1';
+      btnPlus.style.opacity  = persone >= MAX ? '0.3' : '1';
+    }
+
+    function buildNameFields() {
+      namesList.innerHTML = '';
+      for (var i = 0; i < persone; i++) {
+        var label = document.createElement('p');
+        label.style.cssText = 'font-family:\'Montserrat\',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#5bbfcc; text-align:left; margin:14px 0 6px;';
+        label.textContent = 'Persona ' + (i + 1);
+        namesList.appendChild(label);
+
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; gap:8px; margin-bottom:4px;';
+
+        var nome = document.createElement('input');
+        nome.type = 'text';
+        nome.placeholder = 'Nome' + (i === 0 ? ' *' : '');
+        nome.id = 'rsvp-nome-' + i;
+        nome.style.cssText = 'flex:1; border:2px solid #d6f0f4; border-radius:12px; padding:12px 14px; font-family:\'Montserrat\',sans-serif; font-size:14px; color:#0d3540; background:#eef8fa; outline:none; box-sizing:border-box;';
+        nome.addEventListener('focus', function() { this.style.borderColor = '#5bbfcc'; });
+        nome.addEventListener('blur',  function() { this.style.borderColor = '#d6f0f4'; });
+
+        var cogn = document.createElement('input');
+        cogn.type = 'text';
+        cogn.placeholder = 'Cognome';
+        cogn.id = 'rsvp-cogn-' + i;
+        cogn.style.cssText = nome.style.cssText;
+        cogn.addEventListener('focus', function() { this.style.borderColor = '#5bbfcc'; });
+        cogn.addEventListener('blur',  function() { this.style.borderColor = '#d6f0f4'; });
+
+        row.appendChild(nome);
+        row.appendChild(cogn);
+        namesList.appendChild(row);
+      }
+    }
+
+    function buildMsg() {
+      var nomi = [];
+      for (var i = 0; i < persone; i++) {
+        var n = (document.getElementById('rsvp-nome-' + i).value.trim());
+        var c = (document.getElementById('rsvp-cogn-' + i).value.trim());
+        var full = (n + ' ' + c).trim();
+        if (full) nomi.push(full);
+      }
+
+      var listaStr = nomi.length > 0
+        ? nomi.map(function(n, i) { return (i + 1) + '. ' + n; }).join('\n')
+        : '(nomi non specificati)';
+
+      return encodeURIComponent(
+        'Ciao! 🎊\n\n' +
+        'Siamo ' + persone + ' person' + (persone === 1 ? 'a' : 'e') + ':\n' +
+        listaStr + '\n\n' +
+        'Abbiamo ricevuto il vostro invito per il matrimonio del 26 Luglio 2026.\n\n' +
+        '✅ CONFERMIAMO la nostra partecipazione!\n\n' +
+        'Non vediamo l\'ora di festeggiare con voi! 🥂🌊'
+      );
+    }
 
     function openModal(target) {
       waTarget = target;
-      inpNome.value = '';
-      inpCogn.value = '';
-      inpOsp.value  = '';
-      errMsg.style.display = 'none';
+      persone = 1;
+      updateCounter();
+      step1.style.display = 'block';
+      step2.style.display = 'none';
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
-      setTimeout(function () { inpNome.focus(); }, 80);
     }
 
     function closeModal() {
@@ -283,62 +382,54 @@
       document.body.style.overflow = '';
     }
 
-    function buildMsg(nome, cognome, ospiti) {
-      var nominativo = (nome + ' ' + cognome).trim();
-      var ospLine = ospiti && parseInt(ospiti) > 0
-        ? '\n👥 Saremo in ' + ospiti + ' person' + (parseInt(ospiti) === 1 ? 'a' : 'e')
-        : '';
-      return encodeURIComponent(
-        'Ciao! 🎊\n\n' +
-        'Sono ' + nominativo + '.\n' +
-        'Ho ricevuto il vostro invito per il matrimonio del 26 Luglio 2026.\n\n' +
-        '✅ CONFERMO la mia partecipazione!' +
-        ospLine + '\n\n' +
-        'Non vedo l\'ora di festeggiare con voi! 🥂🌊'
-      );
+    function goToStep2() {
+      buildNameFields();
+      step1.style.display = 'none';
+      step2.style.display = 'block';
+      errMsg.style.display = 'none';
+      var first = document.getElementById('rsvp-nome-0');
+      if (first) setTimeout(function() { first.focus(); }, 80);
     }
 
-    // Intercetta i due bottoni RSVP
-    var b1 = document.getElementById('rsvp-btn');
-    var b2 = document.getElementById('rsvp-btn-2');
+    // Contatore ±
+    btnMinus.addEventListener('click', function() { if (persone > 1) { persone--; updateCounter(); } });
+    btnPlus.addEventListener('click',  function() { if (persone < MAX) { persone++; updateCounter(); } });
 
-    if (b1) b1.addEventListener('click', function (e) {
-      e.preventDefault();
-      openModal('393280567556');
+    // Step 1 → Step 2
+    btnNext.addEventListener('click', goToStep2);
+
+    // Step 2 → Step 1
+    btnBack.addEventListener('click', function() {
+      step2.style.display = 'none';
+      step1.style.display = 'block';
     });
 
-    if (b2) b2.addEventListener('click', function (e) {
-      e.preventDefault();
-      openModal('393935098068');
-    });
-
-    // Conferma
-    btnConf.addEventListener('click', function () {
-      var nome = inpNome.value.trim();
-      if (!nome) {
+    // Conferma e apri WA
+    btnConf.addEventListener('click', function() {
+      var primo = document.getElementById('rsvp-nome-0');
+      if (!primo || !primo.value.trim()) {
         errMsg.style.display = 'block';
-        inpNome.focus();
+        primo.focus();
+        primo.style.borderColor = '#c62828';
         return;
       }
-      var url = 'https://wa.me/' + waTarget + '?text=' + buildMsg(nome, inpCogn.value.trim(), inpOsp.value);
-      window.open(url, '_blank', 'noopener,noreferrer');
+      window.open('https://wa.me/' + waTarget + '?text=' + buildMsg(), '_blank', 'noopener,noreferrer');
       closeModal();
     });
 
     // Annulla
     btnCanc.addEventListener('click', closeModal);
 
-    // Click fuori dal modal
-    modal.addEventListener('click', function (e) {
-      if (e.target === modal) closeModal();
-    });
+    // Click fuori
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
-    // Enter per confermare
-    [inpNome, inpCogn, inpOsp].forEach(function (inp) {
-      inp.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') btnConf.click();
-      });
-    });
+    // Intercetta bottoni RSVP
+    var b1 = document.getElementById('rsvp-btn');
+    var b2 = document.getElementById('rsvp-btn-2');
+    if (b1) b1.addEventListener('click', function(e) { e.preventDefault(); openModal('393280567556'); });
+    if (b2) b2.addEventListener('click', function(e) { e.preventDefault(); openModal('393935098068'); });
+
+    updateCounter();
   })();
 </script>
   <script>
