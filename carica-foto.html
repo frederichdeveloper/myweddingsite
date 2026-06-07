@@ -87,6 +87,13 @@
       if (type) statusEl.classList.add(type);
     }
 
+    function hideDebug() {
+      debugBox.style.display = "none";
+      debugBox.textContent = "";
+      copyBtn.style.display = "none";
+      copyBtn.textContent = "Copia errore";
+    }
+
     function showDebug(text) {
       debugBox.style.display = "block";
       debugBox.textContent = text;
@@ -105,6 +112,7 @@
 
     fileInput.addEventListener("change", function () {
       selectedFile = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      hideDebug();
 
       if (!selectedFile) {
         btnSend.disabled = true;
@@ -152,7 +160,8 @@
       }
 
       try {
-        setStatus("Conversione e caricamento su Google Drive...");
+        hideDebug();
+        setStatus("Caricamento su Google Drive...");
 
         const base64Image = await fileToBase64(selectedFile);
 
@@ -172,30 +181,42 @@
 
         const responseText = await response.text();
 
-        showDebug(
-          "HTTP STATUS: " + response.status + "\n\n" +
-          "RAW RESPONSE:\n" + responseText
-        );
-
         if (!responseText.trim().startsWith("{")) {
-          setStatus("Il server ha risposto con HTML o errore di login.", "error");
+          setStatus("Foto non inviata", "error");
+          showDebug(
+            "HTTP STATUS: " + response.status + "\n\n" +
+            "RAW RESPONSE:\n" + responseText
+          );
           return;
         }
 
-        const parsed = JSON.parse(responseText);
-
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status + " - " + responseText);
+        let parsed;
+        try {
+          parsed = JSON.parse(responseText);
+        } catch (err) {
+          setStatus("Foto non inviata", "error");
+          showDebug(
+            "JSON PARSE ERROR:\n" +
+            (err && err.message ? err.message : String(err)) +
+            "\n\nRAW RESPONSE:\n" + responseText
+          );
+          return;
         }
 
-        if (!parsed.success) {
-          throw new Error(parsed.message || "Errore Apps Script");
+        if (!response.ok || !parsed.success) {
+          setStatus("Foto non inviata", "error");
+          showDebug(
+            "HTTP STATUS: " + response.status + "\n\n" +
+            "RAW RESPONSE:\n" + responseText
+          );
+          return;
         }
 
         setStatus("✅ Foto inviata con successo!", "success");
+        hideDebug();
       } catch (error) {
         console.error(error);
-        setStatus("Errore durante il caricamento della foto.", "error");
+        setStatus("Foto non inviata", "error");
         showDebug(
           "REQUEST ERROR:\n" +
           (error && error.message ? error.message : String(error))
