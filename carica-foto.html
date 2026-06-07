@@ -156,6 +156,7 @@ const response = await fetch(GOOGLE_SCRIPT_URL, {
 
 setStatus("Richiesta inviata. Controlla Drive.", "success");
               
+
               const responseText = await response.text();
               setDebug("HTTP " + response.status + "\n" + responseText);
 
