@@ -14,35 +14,39 @@
   <div id="site-header"></div>
 
   <main class="drive-camera-page">
-    <section class="drive-camera-section">
-      <div class="drive-camera-container">
-        <h1 class="drive-camera-title">Carica una foto</h1>
-        <p class="drive-camera-subtitle">Scatta una foto e inviala direttamente nella cartella Google Drive.</p>
+  <section class="drive-camera-section">
+    <div class="drive-camera-container">
+      <h1 class="drive-camera-title">Carica una foto</h1>
+      <p class="drive-camera-subtitle">
+        Seleziona una foto dal tuo dispositivo e inviala direttamente nella cartella Google Drive.
+      </p>
 
-        <div class="drive-camera-preview">
-          <video id="camera-video" class="drive-camera-video" autoplay playsinline muted></video>
-          <canvas id="camera-canvas" class="drive-camera-canvas" style="display:none;"></canvas>
+      <div class="drive-camera-preview">
+        <img id="preview-img" class="drive-camera-preview-img" alt="Anteprima foto selezionata" style="display:none;">
+        <div id="preview-placeholder" class="drive-camera-preview-placeholder">
+          Nessuna foto selezionata
         </div>
-
-        <div class="drive-camera-actions">
-          <button type="button" id="btn-avvia-camera" class="drive-camera-btn drive-camera-btn-primary">
-            Avvia fotocamera
-          </button>
-          <button type="button" id="btn-scatta-foto" class="drive-camera-btn drive-camera-btn-secondary" disabled>
-            Scatta e invia
-          </button>
-        </div>
-
-        <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
-
-        <pre id="debug-box" style="display:none; white-space:pre-wrap; margin-top:14px; font-size:12px; line-height:1.5; background:#eef8fa; color:#0a4f5c; padding:12px; border-radius:12px;"></pre>
-
-        <button type="button" id="copy-debug-btn" style="display:none; margin-top:10px; width:100%; border:none; border-radius:12px; padding:12px 16px; background:#0a4f5c; color:#fff; font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
-          Copia errore
-        </button>
       </div>
-    </section>
-  </main>
+
+      <label for="file-input" class="drive-camera-btn drive-camera-btn-primary" style="display:block; text-align:center; margin-bottom:12px; cursor:pointer;">
+        Scegli foto
+      </label>
+      <input type="file" id="file-input" accept="image/*" style="display:none;">
+
+      <button type="button" id="btn-invia-foto" class="drive-camera-btn drive-camera-btn-secondary" disabled>
+        Invia su Google Drive
+      </button>
+
+      <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
+
+      <pre id="debug-box" style="display:none; white-space:pre-wrap; margin-top:14px; font-size:12px; line-height:1.5; background:#eef8fa; color:#0a4f5c; padding:12px; border-radius:12px;"></pre>
+
+      <button type="button" id="copy-debug-btn" style="display:none; margin-top:10px; width:100%; border:none; border-radius:12px; padding:12px 16px; background:#0a4f5c; color:#fff; font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+        Copia errore
+      </button>
+    </div>
+  </section>
+</main>
 
   <div id="site-footer-slot"></div>
 
