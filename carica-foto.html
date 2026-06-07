@@ -34,7 +34,12 @@
         </div>
 
         <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
-        <pre id="debug-box" style="white-space:pre-wrap; margin-top:12px; font-size:12px; color:#0a4f5c; background:#eef8fa; padding:12px; border-radius:12px; display:none;"></pre>
+
+        <pre id="debug-box" style="display:none; white-space:pre-wrap; margin-top:14px; font-size:12px; line-height:1.5; background:#eef8fa; color:#0a4f5c; padding:12px; border-radius:12px;"></pre>
+
+        <button type="button" id="copy-debug-btn" style="display:none; margin-top:10px; width:100%; border:none; border-radius:12px; padding:12px 16px; background:#0a4f5c; color:#fff; font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+          Copia errore
+        </button>
       </div>
     </section>
   </main>
@@ -66,6 +71,7 @@
       const btnShot = document.getElementById("btn-scatta-foto");
       const statusEl = document.getElementById("status-messaggio");
       const debugBox = document.getElementById("debug-box");
+      const copyBtn = document.getElementById("copy-debug-btn");
 
       if (!video || !canvas || !btnStart || !btnShot || !statusEl) return;
 
@@ -77,10 +83,21 @@
         if (type) statusEl.classList.add(type);
       }
 
-      function setDebug(text) {
+      function showDebug(text) {
         debugBox.style.display = "block";
         debugBox.textContent = text;
+        copyBtn.style.display = "block";
       }
+
+      copyBtn.addEventListener("click", async function () {
+        try {
+          await navigator.clipboard.writeText(debugBox.textContent || "");
+          copyBtn.textContent = "Copiato!";
+          setTimeout(function () { copyBtn.textContent = "Copia errore"; }, 1200);
+        } catch (e) {
+          console.warn(e);
+        }
+      });
 
       async function startCamera() {
         try {
@@ -97,7 +114,7 @@
         } catch (error) {
           console.error(error);
           setStatus("Impossibile attivare la fotocamera.", "error");
-          setDebug(String(error && error.message ? error.message : error));
+          showDebug("CAMERA ERROR:\n" + (error && error.message ? error.message : String(error)));
         }
       }
 
@@ -141,6 +158,11 @@
               setStatus("Caricamento su Google Drive...");
 
               const base64Image = fileReader.result.split(",")[1];
+              const payload = JSON.stringify({
+                imageBase64: base64Image,
+                mimeType: blob.type,
+                fileName: `foto_${Date.now()}.jpg`
+              });
 
               const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
@@ -149,36 +171,50 @@
                 headers: {
                   "Content-Type": "text/plain;charset=utf-8"
                 },
-                body: JSON.stringify({
-                  imageBase64: base64Image,
-                  mimeType: blob.type,
-                  fileName: `foto_${Date.now()}.jpg`
-                })
+                body: payload
               });
 
               const responseText = await response.text();
-              setDebug("HTTP " + response.status + "\n" + responseText);
+
+              showDebug(
+                "HTTP STATUS: " + response.status + "\n\n" +
+                "RAW RESPONSE:\n" + responseText
+              );
+
+              if (!responseText.trim().startsWith("{")) {
+                setStatus("Il server ha risposto con HTML o errore di login.", "error");
+                return;
+              }
 
               let parsed;
               try {
                 parsed = JSON.parse(responseText);
-              } catch (e) {
-                throw new Error("Risposta non JSON: " + responseText);
+              } catch (err) {
+                setStatus("Risposta non JSON.", "error");
+                showDebug(
+                  "JSON PARSE ERROR:\n" +
+                  (err && err.message ? err.message : String(err)) +
+                  "\n\nRAW RESPONSE:\n" + responseText
+                );
+                return;
               }
 
               if (!response.ok) {
-                throw new Error(`HTTP ${response.status} - ${responseText}`);
+                throw new Error("HTTP " + response.status + " - " + responseText);
               }
 
               if (!parsed.success) {
-                throw new Error(parsed.message || "Errore sconosciuto Apps Script");
+                throw new Error(parsed.message || "Errore Apps Script");
               }
 
               setStatus("✅ Foto salvata con successo!", "success");
             } catch (error) {
               console.error(error);
               setStatus("Errore durante il caricamento della foto.", "error");
-              setDebug(String(error && error.message ? error.message : error));
+              showDebug(
+                "REQUEST ERROR:\n" +
+                (error && error.message ? error.message : String(error))
+              );
             }
           };
 
@@ -186,7 +222,10 @@
         } catch (error) {
           console.error(error);
           setStatus("Errore durante lo scatto.", "error");
-          setDebug(String(error && error.message ? error.message : error));
+          showDebug(
+            "CAPTURE ERROR:\n" +
+            (error && error.message ? error.message : String(error))
+          );
         }
       }
 
