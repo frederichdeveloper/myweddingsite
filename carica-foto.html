@@ -34,7 +34,7 @@
       <input type="file" id="file-input" accept="image/*" style="display:none;">
 
       <button type="button" id="btn-invia-foto" class="drive-camera-btn drive-camera-btn-secondary" disabled>
-        Invia su Google Drive
+        Carica Foto
       </button>
 
       <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
@@ -51,197 +51,159 @@
   <div id="site-footer-slot"></div>
 
   <script>
-    function loadComponent(url, targetId) {
-      fetch(url)
-        .then(function(res) { return res.text(); })
-        .then(function(html) {
-          var el = document.getElementById(targetId);
-          if (el) el.innerHTML = html;
-        })
-        .catch(function(err) {
-          console.warn('Componente non caricato:', err);
-        });
+  function loadComponent(url, targetId) {
+    fetch(url)
+      .then(function(res) { return res.text(); })
+      .then(function(html) {
+        var el = document.getElementById(targetId);
+        if (el) el.innerHTML = html;
+      })
+      .catch(function(err) {
+        console.warn('Componente non caricato:', err);
+      });
+  }
+
+  loadComponent('components/header.html', 'site-header');
+  loadComponent('components/footer.html', 'site-footer-slot');
+
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwgrsel-sKVjTh1IxQBk4pbf4yMGcrHoYETnxPCQIZFWfQi-wplde4nNFLMGqD88bsg/exec";
+
+  (function () {
+    const fileInput = document.getElementById("file-input");
+    const btnSend = document.getElementById("btn-invia-foto");
+    const statusEl = document.getElementById("status-messaggio");
+    const debugBox = document.getElementById("debug-box");
+    const copyBtn = document.getElementById("copy-debug-btn");
+    const previewImg = document.getElementById("preview-img");
+    const previewPlaceholder = document.getElementById("preview-placeholder");
+
+    if (!fileInput || !btnSend || !statusEl) return;
+
+    let selectedFile = null;
+
+    function setStatus(msg, type) {
+      statusEl.textContent = msg;
+      statusEl.classList.remove("error", "success");
+      if (type) statusEl.classList.add(type);
     }
 
-    loadComponent('components/header.html', 'site-header');
-    loadComponent('components/footer.html', 'site-footer-slot');
+    function showDebug(text) {
+      debugBox.style.display = "block";
+      debugBox.textContent = text;
+      copyBtn.style.display = "block";
+    }
 
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwgrsel-sKVjTh1IxQBk4pbf4yMGcrHoYETnxPCQIZFWfQi-wplde4nNFLMGqD88bsg/exec";
+    copyBtn.addEventListener("click", async function () {
+      try {
+        await navigator.clipboard.writeText(debugBox.textContent || "");
+        copyBtn.textContent = "Copiato!";
+        setTimeout(function () { copyBtn.textContent = "Copia errore"; }, 1200);
+      } catch (e) {
+        console.warn(e);
+      }
+    });
 
-    (function () {
-      const video = document.getElementById("camera-video");
-      const canvas = document.getElementById("camera-canvas");
-      const btnStart = document.getElementById("btn-avvia-camera");
-      const btnShot = document.getElementById("btn-scatta-foto");
-      const statusEl = document.getElementById("status-messaggio");
-      const debugBox = document.getElementById("debug-box");
-      const copyBtn = document.getElementById("copy-debug-btn");
+    fileInput.addEventListener("change", function () {
+      selectedFile = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
 
-      if (!video || !canvas || !btnStart || !btnShot || !statusEl) return;
-
-      let stream = null;
-
-      function setStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.classList.remove("error", "success");
-        if (type) statusEl.classList.add(type);
+      if (!selectedFile) {
+        btnSend.disabled = true;
+        previewImg.style.display = "none";
+        previewPlaceholder.style.display = "block";
+        previewPlaceholder.textContent = "Nessuna foto selezionata";
+        setStatus("");
+        return;
       }
 
-      function showDebug(text) {
-        debugBox.style.display = "block";
-        debugBox.textContent = text;
-        copyBtn.style.display = "block";
+      if (!selectedFile.type.startsWith("image/")) {
+        btnSend.disabled = true;
+        setStatus("Seleziona un file immagine valido.", "error");
+        return;
       }
 
-      copyBtn.addEventListener("click", async function () {
-        try {
-          await navigator.clipboard.writeText(debugBox.textContent || "");
-          copyBtn.textContent = "Copiato!";
-          setTimeout(function () { copyBtn.textContent = "Copia errore"; }, 1200);
-        } catch (e) {
-          console.warn(e);
-        }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImg.src = e.target.result;
+        previewImg.style.display = "block";
+        previewPlaceholder.style.display = "none";
+      };
+      reader.readAsDataURL(selectedFile);
+
+      btnSend.disabled = false;
+      setStatus("Foto selezionata. Pronta per l'invio.");
+    });
+
+    function fileToBase64(file) {
+      return new Promise(function(resolve, reject) {
+        const reader = new FileReader();
+        reader.onload = function() {
+          const dataUrl = reader.result;
+          resolve(dataUrl.split(",")[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
+    }
 
-      async function startCamera() {
-        try {
-          setStatus("Attivazione fotocamera...");
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" },
-            audio: false
-          });
-
-          video.srcObject = stream;
-          await video.play();
-          btnShot.disabled = false;
-          setStatus("Fotocamera attiva. Puoi scattare la foto.");
-        } catch (error) {
-          console.error(error);
-          setStatus("Impossibile attivare la fotocamera.", "error");
-          showDebug("CAMERA ERROR:\n" + (error && error.message ? error.message : String(error)));
-        }
+    btnSend.addEventListener("click", async function () {
+      if (!selectedFile) {
+        setStatus("Prima seleziona una foto.", "error");
+        return;
       }
 
-      function dataURLToBlob(dataUrl) {
-        const parts = dataUrl.split(",");
-        const mime = parts[0].match(/:(.*?);/)[1];
-        const binary = atob(parts[1]);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-        return new Blob([bytes], { type: mime });
-      }
+      try {
+        setStatus("Conversione e caricamento su Google Drive...");
 
-      async function captureAndSend() {
-        if (!stream) {
-          setStatus("Prima avvia la fotocamera.", "error");
+        const base64Image = await fileToBase64(selectedFile);
+        const payload = JSON.stringify({
+          imageBase64: base64Image,
+          mimeType: selectedFile.type || "image/jpeg",
+          fileName: selectedFile.name || ("foto_" + Date.now() + ".jpg")
+        });
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: payload
+        });
+
+        const responseText = await response.text();
+
+        showDebug(
+          "HTTP STATUS: " + response.status + "\n\n" +
+          "RAW RESPONSE:\n" + responseText
+        );
+
+        if (!responseText.trim().startsWith("{")) {
+          setStatus("Il server ha risposto con HTML o errore di login.", "error");
           return;
         }
 
-        try {
-          setStatus("Scatto...");
+        const parsed = JSON.parse(responseText);
 
-          const videoWidth = video.videoWidth;
-          const videoHeight = video.videoHeight;
-
-          if (!videoWidth || !videoHeight) {
-            throw new Error("Dimensioni video non disponibili");
-          }
-
-          canvas.width = videoWidth;
-          canvas.height = videoHeight;
-
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
-
-          const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-          const blob = dataURLToBlob(dataUrl);
-          const fileReader = new FileReader();
-
-          fileReader.onloadend = async function () {
-            try {
-              setStatus("Caricamento su Google Drive...");
-
-              const base64Image = fileReader.result.split(",")[1];
-              const payload = JSON.stringify({
-                imageBase64: base64Image,
-                mimeType: blob.type,
-                fileName: `foto_${Date.now()}.jpg`
-              });
-
-              const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "cors",
-                redirect: "follow",
-                headers: {
-                  "Content-Type": "text/plain;charset=utf-8"
-                },
-                body: payload
-              });
-
-              const responseText = await response.text();
-
-              showDebug(
-                "HTTP STATUS: " + response.status + "\n\n" +
-                "RAW RESPONSE:\n" + responseText
-              );
-
-              if (!responseText.trim().startsWith("{")) {
-                setStatus("Il server ha risposto con HTML o errore di login.", "error");
-                return;
-              }
-
-              let parsed;
-              try {
-                parsed = JSON.parse(responseText);
-              } catch (err) {
-                setStatus("Risposta non JSON.", "error");
-                showDebug(
-                  "JSON PARSE ERROR:\n" +
-                  (err && err.message ? err.message : String(err)) +
-                  "\n\nRAW RESPONSE:\n" + responseText
-                );
-                return;
-              }
-
-              if (!response.ok) {
-                throw new Error("HTTP " + response.status + " - " + responseText);
-              }
-
-              if (!parsed.success) {
-                throw new Error(parsed.message || "Errore Apps Script");
-              }
-
-              setStatus("✅ Foto salvata con successo!", "success");
-            } catch (error) {
-              console.error(error);
-              setStatus("Errore durante il caricamento della foto.", "error");
-              showDebug(
-                "REQUEST ERROR:\n" +
-                (error && error.message ? error.message : String(error))
-              );
-            }
-          };
-
-          fileReader.readAsDataURL(blob);
-        } catch (error) {
-          console.error(error);
-          setStatus("Errore durante lo scatto.", "error");
-          showDebug(
-            "CAPTURE ERROR:\n" +
-            (error && error.message ? error.message : String(error))
-          );
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status + " - " + responseText);
         }
+
+        if (!parsed.success) {
+          throw new Error(parsed.message || "Errore Apps Script");
+        }
+
+        setStatus("✅ Foto inviata con successo!", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus("Errore durante il caricamento della foto.", "error");
+        showDebug(
+          "REQUEST ERROR:\n" +
+          (error && error.message ? error.message : String(error))
+        );
       }
-
-      btnStart.addEventListener("click", startCamera);
-      btnShot.addEventListener("click", captureAndSend);
-
-      window.addEventListener("beforeunload", function () {
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
-        }
-      });
-    })();
-  </script>
+    });
+  })();
+</script>
 </body>
 </html>
