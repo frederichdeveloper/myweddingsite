@@ -36,7 +36,7 @@
 <button type="button" id="btn-invia-foto" class="drive-camera-btn drive-camera-btn-secondary" disabled>
   Carica Foto
 </button>
-<br>
+<br><br>
 <div id="preview-list" class="drive-preview-list"></div>
 
 
@@ -155,7 +155,8 @@
         reader.readAsDataURL(file);
 
         item.appendChild(img);
-        item.appendChild(info);
+        //quando vuoi rimetti il nome della foto
+       //item.appendChild(info);
         previewList.appendChild(item);
       });
     }
