@@ -11,7 +11,10 @@
 </head>
 <body>
 
-  <!-- Pagina autonoma per scattare e inviare foto -->
+  <!-- Header -->
+  <div id="site-header"></div>
+
+  <!-- Contenuto pagina -->
   <main class="drive-camera-page">
     <section class="drive-camera-section">
       <div class="drive-camera-container">
@@ -37,8 +40,25 @@
     </section>
   </main>
 
+  <!-- Footer -->
+  <div id="site-footer-slot"></div>
+
   <script>
-    // Inserisci qui il tuo URL di Google Apps Script
+    function loadComponent(url, targetId) {
+      fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(html) {
+          var el = document.getElementById(targetId);
+          if (el) el.innerHTML = html;
+        })
+        .catch(function(err) {
+          console.warn('Componente non caricato:', err);
+        });
+    }
+
+    loadComponent('components/header.html', 'site-header');
+    loadComponent('components/footer.html', 'site-footer-slot');
+
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwgrsel-sKVjTh1IxQBk4pbf4yMGcrHoYETnxPCQIZFWfQi-wplde4nNFLMGqD88bsg/exec";
 
     (function () {
@@ -93,8 +113,13 @@
 
         try {
           setStatus("Scatto...");
+
           const videoWidth = video.videoWidth;
           const videoHeight = video.videoHeight;
+
+          if (!videoWidth || !videoHeight) {
+            throw new Error("Dimensioni video non disponibili");
+          }
 
           canvas.width = videoWidth;
           canvas.height = videoHeight;
@@ -104,7 +129,6 @@
 
           const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
           const blob = dataURLToBlob(dataUrl);
-
           const fileReader = new FileReader();
 
           fileReader.onloadend = async function () {
@@ -113,25 +137,27 @@
 
               const base64Image = fileReader.result.split(",")[1];
 
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-  method: "POST",
-  mode: "cors",
-  redirect: "follow",
-  headers: {
-    "Content-Type": "text/plain;charset=utf-8"
-  },
-  body: JSON.stringify({
-    imageBase64: base64Image,
-    mimeType: blob.type,
-    fileName: `foto_${Date.now()}.jpg`
-  })
-});
+              const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "cors",
+                redirect: "follow",
+                headers: {
+                  "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                  imageBase64: base64Image,
+                  mimeType: blob.type,
+                  fileName: `foto_${Date.now()}.jpg`
+                })
+              });
 
-const resultText = await response.text();
+              const resultText = await response.text();
+              console.log("Risposta Apps Script:", resultText);
 
-if (!response.ok) {
-  throw new Error("HTTP " + response.status + " - " + resultText);
-}
+              if (!response.ok) {
+                throw new Error("HTTP " + response.status + " - " + resultText);
+              }
+
               setStatus("✅ Foto salvata con successo!", "success");
             } catch (error) {
               console.error(error);
