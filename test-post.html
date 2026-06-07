@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test POST Apps Script</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(180deg, #eef8fa 0%, #d6f0f4 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 720px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      color: #0a4f5c;
+      text-align: center;
+      font-size: 1.6rem;
+    }
+    p {
+      margin: 0 0 18px;
+      color: #4f6f76;
+      text-align: center;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 2px solid #d6f0f4;
+      border-radius: 14px;
+      padding: 14px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      outline: none;
+      resize: vertical;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+    }
+    textarea:focus {
+      border-color: #5bbfcc;
+    }
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+      color: #fff;
+      background: #0a4f5c;
+    }
+    .secondary {
+      background: #c8a84b;
+      color: #0d3540;
+    }
+    .status {
+      min-height: 24px;
+      text-align: center;
+      margin-top: 8px;
+      color: #1a5f70;
+    }
+    .status.error { color: #c62828; }
+    .status.success { color: #2e7d32; }
+    pre {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #eef8fa;
+      color: #0a4f5c;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre.visible { display: block; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Test POST Google Apps Script</h1>
+    <p>Invia un JSON minimale per verificare se il POST arriva correttamente al Web App.</p>
+
+    <textarea id="payload">{"ping":true,"message":"test"}</textarea>
+    <button id="btn-test">Invia POST</button>
+    <button id="btn-clear" class="secondary">Pulisci log</button>
+
+    <div id="status" class="status" aria-live="polite"></div>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "INSERISCI_QUI_IL_TUO_URL_EXEC";
+    const btnTest = document.getElementById("btn-test");
+    const btnClear = document.getElementById("btn-clear");
+    const statusEl = document.getElementById("status");
+    const outputEl = document.getElementById("output");
+    const payloadEl = document.getElementById("payload");
+
+    function setStatus(msg, type) {
+      statusEl.textContent = msg;
+      statusEl.className = "status" + (type ? " " + type : "");
+    }
+
+    function showOutput(text) {
+      outputEl.textContent = text;
+      outputEl.classList.add("visible");
+    }
+
+    btnClear.addEventListener("click", function () {
+      statusEl.textContent = "";
+      outputEl.textContent = "";
+      outputEl.classList.remove("visible");
+    });
+
+    btnTest.addEventListener("click", async function () {
+      try {
+        setStatus("Invio richiesta POST...");
+        outputEl.classList.remove("visible");
+
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: payloadEl.value
+        });
+
+        const text = await res.text();
+
+        showOutput(
+          "HTTP STATUS: " + res.status + "\n\n" +
+          "RAW RESPONSE:\n" + text
+        );
+
+        if (!text.trim().startsWith("{")) {
+          setStatus("Il server ha risposto con HTML o errore di login.", "error");
+          return;
+        }
+
+        const parsed = JSON.parse(text);
+
+        if (!parsed.success) {
+          setStatus("Il server ha risposto con errore.", "error");
+          return;
+        }
+
+        setStatus("POST riuscito.", "success");
+      } catch (err) {
+        setStatus("Errore durante il POST.", "error");
+        showOutput("ERROR:\n" + (err && err.message ? err.message : String(err)));
+      }
+    });
+  </script>
+</body>
+</html>
