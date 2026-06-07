@@ -190,7 +190,7 @@
       setStatus(selectedFiles.length + " foto selezionate. Pronte per l'invio.");
     });
 
-    function compressImageToBase64(file, maxWidth = 1600, quality = 0.72) {
+    function compressImageToBase64(file, maxWidth = 1920, quality = 1) {
       return new Promise(function(resolve, reject) {
         const reader = new FileReader();
 
@@ -227,7 +227,7 @@
     }
 
     async function uploadSingleFile(file) {
-      const base64Image = await compressImageToBase64(file, 1600, 0.72);
+      const base64Image = await compressImageToBase64(file, 1920, 1);
 
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
