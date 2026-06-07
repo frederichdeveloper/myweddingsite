@@ -36,7 +36,7 @@
 <button type="button" id="btn-invia-foto" class="drive-camera-btn drive-camera-btn-secondary" disabled>
   Carica Foto
 </button>
-
+<br>
 <div id="preview-list" class="drive-preview-list"></div>
 
 
@@ -55,23 +55,46 @@
 
   <script>
   function loadComponent(url, targetId) {
-    fetch(url)
+    return fetch(url)
       .then(function(res) { return res.text(); })
       .then(function(html) {
         var el = document.getElementById(targetId);
         if (el) el.innerHTML = html;
+        return html;
       })
       .catch(function(err) {
         console.warn('Componente non caricato:', err);
+        return "";
       });
   }
 
-  loadComponent('components/header.html', 'site-header');
-  loadComponent('components/footer.html', 'site-footer-slot');
+  function initHeaderMenu() {
+    const menuBtn = document.querySelector(".menu-toggle");
+    const menu = document.querySelector(".site-nav");
+    const menuLinks = document.querySelectorAll(".site-nav a");
+
+    if (!menuBtn || !menu) return;
+
+    menuBtn.addEventListener("click", function () {
+      menu.classList.toggle("open");
+      menuBtn.classList.toggle("active");
+    });
+
+    menuLinks.forEach(function(link) {
+      link.addEventListener("click", function () {
+        menu.classList.remove("open");
+        menuBtn.classList.remove("active");
+      });
+    });
+  }
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwduJOML_rUo5SBj69u7wpMJT0nMkr5DQORDvbV-ZMlCfFXIweqpvV4EC_ERjJD9sWJuQ/exec";
 
-  (function () {
+  (async function () {
+    await loadComponent('components/header.html', 'site-header');
+    await loadComponent('components/footer.html', 'site-footer-slot');
+    initHeaderMenu();
+
     const fileInput = document.getElementById("file-input");
     const btnSend = document.getElementById("btn-invia-foto");
     const statusEl = document.getElementById("status-messaggio");
@@ -219,11 +242,9 @@
         btnSend.disabled = true;
         setStatus("Caricamento di " + selectedFiles.length + " foto su Google Drive...");
 
-        const results = [];
         for (let i = 0; i < selectedFiles.length; i++) {
           setStatus("Caricamento foto " + (i + 1) + " di " + selectedFiles.length + "...");
-          const result = await uploadSingleFile(selectedFiles[i]);
-          results.push(result);
+          await uploadSingleFile(selectedFiles[i]);
         }
 
         setStatus("✅ Foto inviate con successo!", "success");
