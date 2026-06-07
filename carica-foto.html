@@ -69,13 +69,20 @@
   }
 
   function initHeaderMenu() {
-    const menuBtn = document.querySelector(".menu-toggle");
-    const menu = document.querySelector(".site-nav");
-    const menuLinks = document.querySelectorAll(".site-nav a");
+    const headerRoot = document.getElementById("site-header");
+    if (!headerRoot) return;
 
-    if (!menuBtn || !menu) return;
+    const menuBtn = headerRoot.querySelector(".menu-toggle");
+    const menu = headerRoot.querySelector(".site-nav");
+    const menuLinks = headerRoot.querySelectorAll(".site-nav a");
 
-    menuBtn.addEventListener("click", function () {
+    if (!menuBtn || !menu) {
+      console.warn("Menu header non trovato");
+      return;
+    }
+
+    menuBtn.addEventListener("click", function (e) {
+      e.preventDefault();
       menu.classList.toggle("open");
       menuBtn.classList.toggle("active");
     });
@@ -88,16 +95,12 @@
     });
   }
 
-
-
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwduJOML_rUo5SBj69u7wpMJT0nMkr5DQORDvbV-ZMlCfFXIweqpvV4EC_ERjJD9sWJuQ/exec";
 
   (async function () {
     await loadComponent('components/header.html', 'site-header');
     await loadComponent('components/footer.html', 'site-footer-slot');
     initHeaderMenu();
-
- 
 
     const fileInput = document.getElementById("file-input");
     const btnSend = document.getElementById("btn-invia-foto");
@@ -106,7 +109,7 @@
     const copyBtn = document.getElementById("copy-debug-btn");
     const previewList = document.getElementById("preview-list");
 
-    if (!fileInput || !btnSend || !statusEl) return;
+    if (!fileInput || !btnSend || !statusEl || !debugBox || !copyBtn || !previewList) return;
 
     let selectedFiles = [];
 
@@ -146,11 +149,7 @@
         item.className = "drive-preview-item";
 
         const img = document.createElement("img");
-        img.alt = file.name;
-
-        const info = document.createElement("div");
-        info.className = "drive-preview-item-info";
-        info.textContent = file.name;
+        img.alt = "Anteprima foto";
 
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -159,8 +158,6 @@
         reader.readAsDataURL(file);
 
         item.appendChild(img);
-        //quando vuoi rimetti il nome della foto
-       //item.appendChild(info);
         previewList.appendChild(item);
       });
     }
@@ -193,19 +190,44 @@
       setStatus(selectedFiles.length + " foto selezionate. Pronte per l'invio.");
     });
 
-    function fileToBase64(file) {
+    function compressImageToBase64(file, maxWidth = 1600, quality = 0.72) {
       return new Promise(function(resolve, reject) {
         const reader = new FileReader();
-        reader.onload = function() {
-          resolve(reader.result.split(",")[1]);
+
+        reader.onload = function(e) {
+          const img = new Image();
+
+          img.onload = function() {
+            let width = img.naturalWidth;
+            let height = img.naturalHeight;
+
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+            resolve(dataUrl.split(",")[1]);
+          };
+
+          img.onerror = reject;
+          img.src = e.target.result;
         };
+
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
     }
 
     async function uploadSingleFile(file) {
-      const base64Image = await fileToBase64(file);
+      const base64Image = await compressImageToBase64(file, 1600, 0.72);
 
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
@@ -216,8 +238,8 @@
         },
         body: JSON.stringify({
           imageBase64: base64Image,
-          mimeType: file.type || "image/jpeg",
-          fileName: file.name || ("foto_" + Date.now() + ".jpg")
+          mimeType: "image/jpeg",
+          fileName: (file.name ? file.name.replace(/\.[^.]+$/, "") : ("foto_" + Date.now())) + ".jpg"
         })
       });
 
