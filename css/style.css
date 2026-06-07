@@ -1510,3 +1510,32 @@ body.menu-open {
     transform: none;
   }
 }
+
+.drive-preview-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.drive-preview-item {
+  border: 1px solid rgba(10, 79, 92, 0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #eef8fa;
+}
+
+.drive-preview-item img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.drive-preview-item-info {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #4f6f76;
+  font-family: 'Montserrat', sans-serif;
+  word-break: break-word;
+}
