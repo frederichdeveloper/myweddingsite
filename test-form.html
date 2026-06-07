@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Form Apps Script</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      box-sizing: border-box;
+    }
+    pre {
+      background: #eef8fa;
+      padding: 12px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Form Google Apps Script</h1>
+
+  <form id="testForm" target="hiddenFrame" method="POST" action="INSERISCI_QUI_IL_TUO_URL_EXEC">
+    <input name="ping" value="1" />
+    <input name="test" value="ok" />
+    <button type="submit">Invia form</button>
+  </form>
+
+  <iframe name="hiddenFrame" style="display:none;"></iframe>
+
+  <pre id="out">Premi il pulsante per inviare il form.</pre>
+
+  <script>
+    const form = document.getElementById("testForm");
+    const out = document.getElementById("out");
+
+    form.addEventListener("submit", function () {
+      out.textContent = "Form inviato. Controlla Apps Script > Executions.";
+    });
+  </script>
+</body>
+</html>
