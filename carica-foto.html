@@ -113,25 +113,25 @@
 
               const base64Image = fileReader.result.split(",")[1];
 
-              const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "cors",
-                headers: {
-                  "Content-Type": "text/plain;charset=utf-8"
-                },
-                body: JSON.stringify({
-                  imageBase64: base64Image,
-                  mimeType: blob.type,
-                  fileName: `foto_${Date.now()}.jpg`
-                })
-              });
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+  method: "POST",
+  mode: "cors",
+  redirect: "follow",
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify({
+    imageBase64: base64Image,
+    mimeType: blob.type,
+    fileName: `foto_${Date.now()}.jpg`
+  })
+});
 
-              const resultText = await response.text();
+const resultText = await response.text();
 
-              if (!response.ok) {
-                throw new Error("Errore HTTP: " + response.status + " - " + resultText);
-              }
-
+if (!response.ok) {
+  throw new Error("HTTP " + response.status + " - " + resultText);
+}
               setStatus("✅ Foto salvata con successo!", "success");
             } catch (error) {
               console.error(error);
