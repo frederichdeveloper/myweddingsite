@@ -11,10 +11,8 @@
 </head>
 <body>
 
-  <!-- Header -->
   <div id="site-header"></div>
 
-  <!-- Contenuto pagina -->
   <main class="drive-camera-page">
     <section class="drive-camera-section">
       <div class="drive-camera-container">
@@ -36,11 +34,11 @@
         </div>
 
         <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
+        <pre id="debug-box" style="white-space:pre-wrap; margin-top:12px; font-size:12px; color:#0a4f5c; background:#eef8fa; padding:12px; border-radius:12px; display:none;"></pre>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
   <div id="site-footer-slot"></div>
 
   <script>
@@ -67,6 +65,7 @@
       const btnStart = document.getElementById("btn-avvia-camera");
       const btnShot = document.getElementById("btn-scatta-foto");
       const statusEl = document.getElementById("status-messaggio");
+      const debugBox = document.getElementById("debug-box");
 
       if (!video || !canvas || !btnStart || !btnShot || !statusEl) return;
 
@@ -76,6 +75,11 @@
         statusEl.textContent = msg;
         statusEl.classList.remove("error", "success");
         if (type) statusEl.classList.add(type);
+      }
+
+      function setDebug(text) {
+        debugBox.style.display = "block";
+        debugBox.textContent = text;
       }
 
       async function startCamera() {
@@ -93,6 +97,7 @@
         } catch (error) {
           console.error(error);
           setStatus("Impossibile attivare la fotocamera.", "error");
+          setDebug(String(error && error.message ? error.message : error));
         }
       }
 
@@ -151,17 +156,29 @@
                 })
               });
 
-              const resultText = await response.text();
-              console.log("Risposta Apps Script:", resultText);
+              const responseText = await response.text();
+              setDebug("HTTP " + response.status + "\n" + responseText);
+
+              let parsed;
+              try {
+                parsed = JSON.parse(responseText);
+              } catch (e) {
+                throw new Error("Risposta non JSON: " + responseText);
+              }
 
               if (!response.ok) {
-                throw new Error("HTTP " + response.status + " - " + resultText);
+                throw new Error(`HTTP ${response.status} - ${responseText}`);
+              }
+
+              if (!parsed.success) {
+                throw new Error(parsed.message || "Errore sconosciuto Apps Script");
               }
 
               setStatus("✅ Foto salvata con successo!", "success");
             } catch (error) {
               console.error(error);
               setStatus("Errore durante il caricamento della foto.", "error");
+              setDebug(String(error && error.message ? error.message : error));
             }
           };
 
@@ -169,6 +186,7 @@
         } catch (error) {
           console.error(error);
           setStatus("Errore durante lo scatto.", "error");
+          setDebug(String(error && error.message ? error.message : error));
         }
       }
 
