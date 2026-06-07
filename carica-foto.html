@@ -115,7 +115,7 @@
         return;
       }
 
-      if (!selectedFile.type.startsWith("image/")) {
+      if (!selectedFile.type || !selectedFile.type.startsWith("image/")) {
         btnSend.disabled = true;
         setStatus("Seleziona un file immagine valido.", "error");
         return;
@@ -155,11 +155,6 @@
         setStatus("Conversione e caricamento su Google Drive...");
 
         const base64Image = await fileToBase64(selectedFile);
-        const payload = JSON.stringify({
-          imageBase64: base64Image,
-          mimeType: selectedFile.type || "image/jpeg",
-          fileName: selectedFile.name || ("foto_" + Date.now() + ".jpg")
-        });
 
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
@@ -168,7 +163,11 @@
           headers: {
             "Content-Type": "text/plain;charset=utf-8"
           },
-          body: payload
+          body: JSON.stringify({
+            imageBase64: base64Image,
+            mimeType: selectedFile.type || "image/jpeg",
+            fileName: selectedFile.name || ("foto_" + Date.now() + ".jpg")
+          })
         });
 
         const responseText = await response.text();
