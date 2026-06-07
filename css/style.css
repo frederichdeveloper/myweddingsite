@@ -1283,8 +1283,48 @@ body.menu-open {
   }
 }
 
+.drive-camera-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: linear-gradient(180deg, #eef8fa 0%, #d6f0f4 100%);
+}
 
+.drive-camera-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
+.drive-camera-container {
+  width: 100%;
+  max-width: 640px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.drive-camera-title {
+  margin: 0 0 10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 1.1;
+  color: #0a4f5c;
+  text-align: center;
+  font-weight: 600;
+}
+
+.drive-camera-subtitle {
+  margin: 0 0 22px;
+  color: #4f6f76;
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
 
 .drive-camera-preview {
   position: relative;
@@ -1294,7 +1334,7 @@ body.menu-open {
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 16px;
-  border: 1px solid rgba(10,79,92,0.12);
+  border: 1px solid rgba(10, 79, 92, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1313,4 +1353,160 @@ body.menu-open {
   color: #4f6f76;
   text-align: center;
   padding: 16px;
+  max-width: 80%;
+}
+
+.drive-camera-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.drive-camera-btn {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drive-camera-btn:hover {
+  transform: translateY(-1px);
+}
+
+.drive-camera-btn:active {
+  transform: translateY(0);
+}
+
+.drive-camera-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.drive-camera-btn-primary {
+  background: #0a4f5c;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(10, 79, 92, 0.16);
+}
+
+.drive-camera-btn-primary:hover {
+  background: #0f6677;
+}
+
+.drive-camera-btn-secondary {
+  background: #c8a84b;
+  color: #0d3540;
+  box-shadow: 0 10px 24px rgba(200, 168, 75, 0.18);
+}
+
+.drive-camera-btn-secondary:hover {
+  background: #b99634;
+}
+
+.drive-camera-status {
+  margin-top: 14px;
+  min-height: 24px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: center;
+  color: #0a4f5c;
+  word-break: break-word;
+}
+
+.drive-camera-status.error {
+  color: #c62828;
+}
+
+.drive-camera-status.success {
+  color: #2e7d32;
+}
+
+.drive-camera-debug {
+  display: none;
+  white-space: pre-wrap;
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  background: #eef8fa;
+  color: #0a4f5c;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(10, 79, 92, 0.12);
+  overflow-wrap: anywhere;
+}
+
+.drive-camera-copy-btn {
+  display: none;
+  margin-top: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #0a4f5c;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.drive-camera-copy-btn:hover {
+  background: #0f6677;
+  transform: translateY(-1px);
+}
+
+.drive-camera-copy-btn:active {
+  transform: translateY(0);
+}
+
+.drive-camera-file {
+  display: none;
+}
+
+.drive-camera-label-btn {
+  display: block;
+  text-align: center;
+}
+
+@media (min-width: 720px) {
+  .drive-camera-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .drive-camera-container {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .drive-camera-subtitle {
+    font-size: 0.92rem;
+  }
+
+  .drive-camera-btn {
+    padding: 13px 14px;
+    font-size: 0.92rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drive-camera-btn,
+  .drive-camera-copy-btn {
+    transition: none;
+  }
+
+  .drive-camera-btn:hover,
+  .drive-camera-btn:active,
+  .drive-camera-copy-btn:hover {
+    transform: none;
+  }
 }
