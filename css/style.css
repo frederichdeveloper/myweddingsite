@@ -1513,29 +1513,34 @@ body.menu-open {
 
 .drive-preview-list {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
   margin-bottom: 16px;
-}
-
-.drive-preview-item {
-  border: 1px solid rgba(10, 79, 92, 0.12);
-  border-radius: 16px;
-  overflow: hidden;
-  background: #eef8fa;
 }
 
 .drive-preview-item img {
   width: 100%;
-  height: 220px;
+  height: 90px;
   object-fit: cover;
   display: block;
 }
 
-.drive-preview-item-info {
-  padding: 10px 12px;
-  font-size: 13px;
-  color: #4f6f76;
-  font-family: 'Montserrat', sans-serif;
-  word-break: break-word;
+@media (min-width: 700px) {
+  .drive-preview-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .drive-preview-item img {
+    height: 100px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .drive-preview-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .drive-preview-item img {
+    height: 110px;
+  }
 }
