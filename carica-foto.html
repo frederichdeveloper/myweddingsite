@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carica Foto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Pagina autonoma per scattare e inviare foto -->
+  <main class="drive-camera-page">
+    <section class="drive-camera-section">
+      <div class="drive-camera-container">
+        <h1 class="drive-camera-title">Carica una foto</h1>
+        <p class="drive-camera-subtitle">Scatta una foto e inviala direttamente nella cartella Google Drive.</p>
+
+        <div class="drive-camera-preview">
+          <video id="camera-video" class="drive-camera-video" autoplay playsinline muted></video>
+          <canvas id="camera-canvas" class="drive-camera-canvas" style="display:none;"></canvas>
+        </div>
+
+        <div class="drive-camera-actions">
+          <button type="button" id="btn-avvia-camera" class="drive-camera-btn drive-camera-btn-primary">
+            Avvia fotocamera
+          </button>
+          <button type="button" id="btn-scatta-foto" class="drive-camera-btn drive-camera-btn-secondary" disabled>
+            Scatta e invia
+          </button>
+        </div>
+
+        <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Inserisci qui il tuo URL di Google Apps Script
+    const GOOGLE_SCRIPT_URL = "INSERISCI_QUI_IL_TUO_URL";
+
+    (function () {
+      const video = document.getElementById("camera-video");
+      const canvas = document.getElementById("camera-canvas");
+      const btnStart = document.getElementById("btn-avvia-camera");
+      const btnShot = document.getElementById("btn-scatta-foto");
+      const statusEl = document.getElementById("status-messaggio");
+
+      if (!video || !canvas || !btnStart || !btnShot || !statusEl) return;
+
+      let stream = null;
+
+      function setStatus(msg, type) {
+        statusEl.textContent = msg;
+        statusEl.classList.remove("error", "success");
+        if (type) statusEl.classList.add(type);
+      }
+
+      async function startCamera() {
+        try {
+          setStatus("Attivazione fotocamera...");
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+            audio: false
+          });
+
+          video.srcObject = stream;
+          await video.play();
+          btnShot.disabled = false;
+          setStatus("Fotocamera attiva. Puoi scattare la foto.");
+        } catch (error) {
+          console.error(error);
+          setStatus("Impossibile attivare la fotocamera.", "error");
+        }
+      }
+
+      function dataURLToBlob(dataUrl) {
+        const parts = dataUrl.split(",");
+        const mime = parts[0].match(/:(.*?);/)[1];
+        const binary = atob(parts[1]);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return new Blob([bytes], { type: mime });
+      }
+
+      async function captureAndSend() {
+        if (!stream) {
+          setStatus("Prima avvia la fotocamera.", "error");
+          return;
+        }
+
+        try {
+          setStatus("Scatto...");
+          const videoWidth = video.videoWidth;
+          const videoHeight = video.videoHeight;
+
+          canvas.width = videoWidth;
+          canvas.height = videoHeight;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+          const blob = dataURLToBlob(dataUrl);
+
+          const fileReader = new FileReader();
+
+          fileReader.onloadend = async function () {
+            try {
+              setStatus("Caricamento su Google Drive...");
+
+              const base64Image = fileReader.result.split(",")[1];
+
+              const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "cors",
+                headers: {
+                  "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                  imageBase64: base64Image,
+                  mimeType: blob.type,
+                  fileName: `foto_${Date.now()}.jpg`
+                })
+              });
+
+              const resultText = await response.text();
+
+              if (!response.ok) {
+                throw new Error("Errore HTTP: " + response.status + " - " + resultText);
+              }
+
+              setStatus("✅ Foto salvata con successo!", "success");
+            } catch (error) {
+              console.error(error);
+              setStatus("Errore durante il caricamento della foto.", "error");
+            }
+          };
+
+          fileReader.readAsDataURL(blob);
+        } catch (error) {
+          console.error(error);
+          setStatus("Errore durante lo scatto.", "error");
+        }
+      }
+
+      btnStart.addEventListener("click", startCamera);
+      btnShot.addEventListener("click", captureAndSend);
+
+      window.addEventListener("beforeunload", function () {
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

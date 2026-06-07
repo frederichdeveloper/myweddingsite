@@ -1282,3 +1282,146 @@ body.menu-open {
     border-radius: 16px;
   }
 }
+
+
+
+
+/* CSS pagina carica-foto: incolla nel tuo style.css */
+.drive-camera-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eef8fa 0%, #d6f0f4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.drive-camera-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.drive-camera-container {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+  padding: 20px;
+}
+
+.drive-camera-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.9rem;
+  margin: 0 0 8px;
+  color: #0a4f5c;
+  text-align: center;
+}
+
+.drive-camera-subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  margin: 0 0 18px;
+  color: #4f6f76;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.drive-camera-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #0d3540;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.drive-camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.drive-camera-canvas {
+  width: 100%;
+  height: auto;
+}
+
+.drive-camera-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.drive-camera-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 18px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  min-width: 160px;
+}
+
+.drive-camera-btn:hover {
+  transform: translateY(-1px);
+}
+
+.drive-camera-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.drive-camera-btn-primary {
+  background: #0a4f5c;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(10, 79, 92, 0.18);
+}
+
+.drive-camera-btn-secondary {
+  background: #c8a84b;
+  color: #0d3540;
+  box-shadow: 0 8px 18px rgba(200, 168, 75, 0.18);
+}
+
+.drive-camera-status {
+  min-height: 24px;
+  margin-top: 14px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  text-align: center;
+  color: #1a5f70;
+  line-height: 1.4;
+}
+
+.drive-camera-status.error {
+  color: #c62828;
+}
+
+.drive-camera-status.success {
+  color: #2e7d32;
+}
+
+@media (max-width: 480px) {
+  .drive-camera-container {
+    padding: 16px;
+  }
+
+  .drive-camera-actions {
+    flex-direction: column;
+  }
+
+  .drive-camera-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
