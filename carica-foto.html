@@ -88,12 +88,17 @@
     });
   }
 
+     loadComponent('components/header.html', 'site-header', initNavHamburger);
+    loadComponent('components/footer.html', 'site-footer-slot', null);
+
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwduJOML_rUo5SBj69u7wpMJT0nMkr5DQORDvbV-ZMlCfFXIweqpvV4EC_ERjJD9sWJuQ/exec";
 
   (async function () {
     await loadComponent('components/header.html', 'site-header');
     await loadComponent('components/footer.html', 'site-footer-slot');
     initHeaderMenu();
+
+ 
 
     const fileInput = document.getElementById("file-input");
     const btnSend = document.getElementById("btn-invia-foto");
