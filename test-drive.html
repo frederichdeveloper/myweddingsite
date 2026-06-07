@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Google Apps Script</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .test-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: linear-gradient(180deg, #eef8fa 0%, #d6f0f4 100%);
+      font-family: 'Montserrat', sans-serif;
+    }
+    .test-card {
+      width: 100%;
+      max-width: 560px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+      padding: 24px;
+    }
+    .test-title {
+      font-size: 1.6rem;
+      margin: 0 0 8px;
+      color: #0a4f5c;
+      text-align: center;
+    }
+    .test-subtitle {
+      margin: 0 0 18px;
+      color: #4f6f76;
+      text-align: center;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+    .test-btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 18px;
+      background: #0a4f5c;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+    .test-btn-secondary {
+      background: #c8a84b;
+      color: #0d3540;
+    }
+    .test-status {
+      min-height: 24px;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 8px;
+      color: #1a5f70;
+    }
+    .test-status.error { color: #c62828; }
+    .test-status.success { color: #2e7d32; }
+    .test-output {
+      display: none;
+      white-space: pre-wrap;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #eef8fa;
+      color: #0a4f5c;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .test-output.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <main class="test-page">
+    <section class="test-card">
+      <h1 class="test-title">Test Google Apps Script</h1>
+      <p class="test-subtitle">
+        Usa questa pagina per verificare se il tuo Web App risponde correttamente prima di testare l’upload foto.
+      </p>
+
+      <button type="button" id="btn-test-get" class="test-btn">Test GET</button>
+      <button type="button" id="btn-test-post" class="test-btn test-btn-secondary">Test POST JSON</button>
+
+      <div id="test-status" class="test-status" aria-live="polite"></div>
+      <pre id="test-output" class="test-output"></pre>
+    </section>
+  </main>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "INSERISCI_QUI_IL_TUO_URL_EXEC";
+
+    const btnGet = document.getElementById("btn-test-get");
+    const btnPost = document.getElementById("btn-test-post");
+    const statusEl = document.getElementById("test-status");
+    const outputEl = document.getElementById("test-output");
+
+    function setStatus(msg, type) {
+      statusEl.textContent = msg;
+      statusEl.className = "test-status" + (type ? " " + type : "");
+    }
+
+    function showOutput(text) {
+      outputEl.textContent = text;
+      outputEl.classList.add("visible");
+    }
+
+    async function testGet() {
+      try {
+        setStatus("Invio richiesta GET...", "");
+        outputEl.classList.remove("visible");
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "GET",
+          redirect: "follow"
+        });
+        const text = await res.text();
+        setStatus("Risposta ricevuta.", "success");
+        showOutput("HTTP STATUS: " + res.status + "\n\n" + text);
+      } catch (err) {
+        setStatus("Errore GET.", "error");
+        showOutput("GET ERROR:\n" + (err && err.message ? err.message : String(err)));
+      }
+    }
+
+    async function testPost() {
+      try {
+        setStatus("Invio richiesta POST...", "");
+        outputEl.classList.remove("visible");
+        const payload = {
+          ping: true,
+          time: new Date().toISOString()
+        };
+
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await res.text();
+        setStatus("Risposta ricevuta.", "success");
+        showOutput("HTTP STATUS: " + res.status + "\n\n" + text);
+
+        if (!text.trim().startsWith("{")) {
+          setStatus("Il server ha risposto con HTML o errore.", "error");
+          return;
+        }
+
+        const parsed = JSON.parse(text);
+        showOutput("HTTP STATUS: " + res.status + "\n\n" + JSON.stringify(parsed, null, 2));
+      } catch (err) {
+        setStatus("Errore POST.", "error");
+        showOutput("POST ERROR:\n" + (err && err.message ? err.message : String(err)));
+      }
+    }
+
+    btnGet.addEventListener("click", testGet);
+    btnPost.addEventListener("click", testPost);
+  </script>
+</body>
+</html>
