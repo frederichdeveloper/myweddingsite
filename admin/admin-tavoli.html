@@ -195,8 +195,8 @@
     });
   }
   async function addGuest() {
-    var nome = document.getElementById('input-nome').value.trim(); var cognome = document.getElementById('input-cognome').value.trim(); if (!nome && !cognome) return;
-    var fullName = (nome + ' ' + cognome).trim(); if (state.ospiti.indexOf(fullName) !== 0) { alert('Questo ospite esiste già.'); return; }
+    //var nome = document.getElementById('input-nome').value.trim(); var cognome = document.getElementById('input-cognome').value.trim(); if (!nome && !cognome) return;
+    //var fullName = (nome + ' ' + cognome).trim(); if (state.ospiti.indexOf(fullName) !== 0) { alert('Questo ospite esiste già.'); return; }
     state.ospiti.push(fullName); document.getElementById('input-nome').value = ''; document.getElementById('input-cognome').value = ''; document.getElementById('input-nome').focus(); renderOspiti(); setSaveStatus('Salvataggio ospite in corso...');
     try { var db = buildDbFromState({ tables: { items: state.tavoli, seatsPerTable: state.seatsPerTable, count: state.tavoli.length }, guests: state.ospiti }); MatrimonioDB.saveLocalCopy(db); await MatrimonioDB.syncToRemote(db); dirty = false; setSaveStatus('✅ Ospite salvato nel foglio Google'); } catch (err) { console.error(err); markDirty(); setSaveStatus('⚠️ Ospite aggiunto solo localmente'); alert('Ospite aggiunto solo localmente. Controlla Apps Script o connessione.'); }
   }
