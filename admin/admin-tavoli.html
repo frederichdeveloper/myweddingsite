@@ -11,7 +11,19 @@
   <style>
     .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 30% 20%, var(--aqua-mid) 0%, var(--aqua-deep) 70%); padding: 24px; }
     .login-card { position: relative; background: var(--white); border-radius: 22px; padding: 44px 32px; width: 100%; max-width: 380px; box-shadow: 0 24px 70px rgba(0,0,0,0.35); text-align: center; overflow: hidden; }
-    .login-card::before { content: ""; position: absolute; inset: 0; border-radius: 22px; padding: 1px; background: linear-gradient(135deg, rgba(200,168,75,.6), rgba(255,255,255,0) 45%, rgba(200,168,75,.35)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(200,168,75,.6), rgba(255,255,255,0) 45%, rgba(200,168,75,.35));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
     .login-icon { font-size: 48px; margin-bottom: 16px; animation: floatIcon 3s ease-in-out infinite; }
     @keyframes floatIcon { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
     .login-title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; font-style: italic; color: var(--aqua-deep); margin-bottom: 6px; }
@@ -59,15 +71,15 @@
     .guest-del-btn { background: none; border: none; color: #ef9a9a; font-size: 16px; cursor: pointer; padding: 4px; line-height: 1; border-radius: 6px; transition: color 0.15s; }
     .guest-del-btn:hover { color: #c62828; }
     .guest-edit-row { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0; }
-.guest-edit-input { flex: 1; min-width: 90px; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--white); border: 2px solid var(--aqua-foam); border-radius: 8px; padding: 8px 10px; outline: none; transition: border-color .2s; box-sizing: border-box; }
-.guest-edit-input:focus { border-color: var(--aqua-light); }
-.guest-edit-btn { background: none; border: none; font-size: 15px; cursor: pointer; padding: 5px 7px; border-radius: 6px; transition: background .15s; flex-shrink: 0; }
-.guest-edit-btn.edit-icon { color: var(--aqua-mid); }
-.guest-edit-btn.edit-icon:hover { background: var(--aqua-mist); }
-.guest-edit-btn.save-icon { color: #2e7d32; }
-.guest-edit-btn.save-icon:hover { background: #e8f5e9; }
-.guest-edit-btn.cancel-icon { color: #8ab0b8; }
-.guest-edit-btn.cancel-icon:hover { background: #f0f4f5; }
+    .guest-edit-input { flex: 1; min-width: 90px; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--white); border: 2px solid var(--aqua-foam); border-radius: 8px; padding: 8px 10px; outline: none; transition: border-color .2s; box-sizing: border-box; }
+    .guest-edit-input:focus { border-color: var(--aqua-light); }
+    .guest-edit-btn { background: none; border: none; font-size: 15px; cursor: pointer; padding: 5px 7px; border-radius: 6px; transition: background .15s; flex-shrink: 0; }
+    .guest-edit-btn.edit-icon { color: var(--aqua-mid); }
+    .guest-edit-btn.edit-icon:hover { background: var(--aqua-mist); }
+    .guest-edit-btn.save-icon { color: #2e7d32; }
+    .guest-edit-btn.save-icon:hover { background: #e8f5e9; }
+    .guest-edit-btn.cancel-icon { color: #8ab0b8; }
+    .guest-edit-btn.cancel-icon:hover { background: #f0f4f5; }
     .tavoli-admin-section { padding: 20px; }
     .tavolo-admin-card { background: var(--white); border-radius: 16px; border: 1px solid var(--aqua-foam); box-shadow: 0 2px 8px rgba(10,79,92,0.06); margin-bottom: 14px; overflow: hidden; transition: box-shadow .2s; }
     .tavolo-admin-card:hover { box-shadow: 0 8px 22px rgba(10,79,92,0.1); }
@@ -108,7 +120,6 @@
     .danger-btn { width: 100%; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--white); background: #e53935; border: none; border-radius: 12px; padding: 14px; cursor: pointer; margin-top: 8px; transition: transform .15s; }
     .danger-btn:hover { transform: translateY(-1px); }
     .guest-item.editing { background: var(--aqua-mist); border-color: var(--aqua-light); }
-
   </style>
 </head>
 <body>
@@ -182,6 +193,9 @@
   var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
   var dirty = false;
   var dbLoaded = false;
+  var editingGuestIndex = null;
+
+  var whatsappIconSvg = '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.7.44 3.36 1.28 4.83L2 22l5.4-1.42a9.87 9.87 0 0 0 4.64 1.18h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.83c0 4.55-3.7 8.25-8.26 8.25a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.56 3.71-8.25 8.25-8.25M8.53 6.98c-.17 0-.45.06-.68.32-.23.25-.9.87-.9 2.13 0 1.25.92 2.46 1.05 2.63.13.17 1.8 2.87 4.45 3.9 2.2.86 2.65.69 3.13.65.47-.04 1.52-.62 1.74-1.22.21-.6.21-1.11.15-1.22-.06-.1-.23-.17-.48-.3-.25-.12-1.52-.75-1.75-.84-.24-.08-.41-.12-.58.13-.17.25-.66.83-.81 1-.15.17-.3.19-.55.06-.25-.12-1.06-.39-2.02-1.24-.75-.66-1.25-1.48-1.4-1.73-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.24-.42.08-.17.04-.31-.02-.44-.06-.12-.58-1.42-.8-1.94-.2-.5-.42-.44-.58-.44h-.5" /></svg>';
 
   function escHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
 
@@ -261,100 +275,93 @@
     return state.ospiti.filter(function(o){ return assigned.indexOf(o.name) === -1; });
   }
 
-  function renderAll() { renderOspiti(); renderTavoliAdmin(); }
-
-  var whatsappIconSvg = '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.7.44 3.36 1.28 4.83L2 22l5.4-1.42a9.87 9.87 0 0 0 4.64 1.18h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.83c0 4.55-3.7 8.25-8.26 8.25a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.56 3.71-8.25 8.25-8.25M8.53 6.98c-.17 0-.45.06-.68.32-.23.25-.9.87-.9 2.13 0 1.25.92 2.46 1.05 2.63.13.17 1.8 2.87 4.45 3.9 2.2.86 2.65.69 3.13.65.47-.04 1.52-.62 1.74-1.22.21-.6.21-1.11.15-1.22-.06-.1-.23-.17-.48-.3-.25-.12-1.52-.75-1.75-.84-.24-.08-.41-.12-.58.13-.17.25-.66.83-.81 1-.15.17-.3.19-.55.06-.25-.12-1.06-.39-2.02-1.24-.75-.66-1.25-1.48-1.4-1.73-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.24-.42.08-.17.04-.31-.02-.44-.06-.12-.58-1.42-.8-1.94-.2-.5-.42-.44-.58-.44h-.5" /></svg>';
-
-  var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
-var dirty = false;
-var dbLoaded = false;
-var editingGuestIndex = null;   // <-- QUI, fuori da renderOspiti
-
-function updateGuestNameEverywhere(oldName, newName) {   // <-- QUI, fuori da renderOspiti
-  if (oldName === newName) return;
-  state.tavoli.forEach(function(t) {
-    var idx = (t.guests || []).indexOf(oldName);
-    if (idx !== -1) t.guests[idx] = newName;
-  });
-}
-
-function renderOspiti() {
-  var ul = document.getElementById('guest-list'); ul.innerHTML = '';
-  if (state.ospiti.length === 0) {
-    ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome, cognome e telefono qui sopra.</li>';
-    return;
+  function updateGuestNameEverywhere(oldName, newName) {
+    if (oldName === newName) return;
+    state.tavoli.forEach(function(t) {
+      var idx = (t.guests || []).indexOf(oldName);
+      if (idx !== -1) t.guests[idx] = newName;
+    });
   }
 
-  state.ospiti.forEach(function(ospite, index){
-    var li = document.createElement('li'); li.className = 'guest-item';
-    var tavoloAssegnato = null;
-    state.tavoli.forEach(function(t){ if ((t.guests || []).indexOf(ospite.name) !== -1) tavoloAssegnato = t; });
+  function renderAll() { renderOspiti(); renderTavoliAdmin(); }
 
-    if (editingGuestIndex === index) {
-      li.classList.add('editing');
-      li.innerHTML =
-        '<div class="guest-edit-row">' +
-          '<input class="guest-edit-input edit-name" type="text" value="' + escHtml(ospite.name) + '" placeholder="Nome e cognome">' +
-          '<input class="guest-edit-input edit-phone" type="tel" value="' + escHtml(ospite.phone || '') + '" placeholder="Telefono">' +
-        '</div>' +
-        '<button class="guest-edit-btn save-icon" title="Salva">✔</button>' +
-        '<button class="guest-edit-btn cancel-icon" title="Annulla">✕</button>';
-
-      var nameInput = li.querySelector('.edit-name');
-      var phoneInput = li.querySelector('.edit-phone');
-
-      function commitEdit() {
-        var newName = nameInput.value.trim();
-        var newPhone = normalizePhone(phoneInput.value.trim());
-        if (!newName) { alert('Il nome non può essere vuoto.'); return; }
-        var oldName = ospite.name;
-        updateGuestNameEverywhere(oldName, newName);
-        ospite.name = newName;
-        ospite.phone = newPhone;
-        editingGuestIndex = null;
-        markDirty();
-        renderOspiti();
-        renderTavoliAdmin();
-      }
-
-      li.querySelector('.save-icon').addEventListener('click', commitEdit);
-      li.querySelector('.cancel-icon').addEventListener('click', function(){ editingGuestIndex = null; renderOspiti(); });
-      nameInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { editingGuestIndex = null; renderOspiti(); } });
-      phoneInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { editingGuestIndex = null; renderOspiti(); } });
-
-      ul.appendChild(li);
-      nameInput.focus();
+  function renderOspiti() {
+    var ul = document.getElementById('guest-list'); ul.innerHTML = '';
+    if (state.ospiti.length === 0) {
+      ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome, cognome e telefono qui sopra.</li>';
       return;
     }
 
-    var whatsappLink = buildWhatsappLink(ospite, tavoloAssegnato ? ('sei al ' + tavoloAssegnato.name) : '');
-    var waClass = ospite.phone ? '' : ' disabled';
-    var waTitle = ospite.phone ? 'Scrivi su WhatsApp' : 'Numero non impostato';
+    state.ospiti.forEach(function(ospite, index){
+      var li = document.createElement('li'); li.className = 'guest-item';
+      var tavoloAssegnato = null;
+      state.tavoli.forEach(function(t){ if ((t.guests || []).indexOf(ospite.name) !== -1) tavoloAssegnato = t; });
 
-    li.innerHTML =
-      '<div class="guest-item-main">' +
-        '<span class="guest-item-name">' + escHtml(ospite.name) + '</span>' +
-        (ospite.phone ? '<span class="guest-item-phone">📞 +' + escHtml(ospite.phone) + '</span>' : '') +
-      '</div>' +
-      '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' + (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.name) : 'Non assegnato') + '</span>' +
-      '<a class="guest-whatsapp' + waClass + '" href="' + whatsappLink + '" target="_blank" rel="noopener" title="' + waTitle + '">' + whatsappIconSvg + '</a>' +
-      '<button class="guest-edit-btn edit-icon" title="Modifica ospite">✎</button>' +
-      '<button class="guest-del-btn" title="Rimuovi ospite">✕</button>';
+      if (editingGuestIndex === index) {
+        li.classList.add('editing');
+        li.innerHTML =
+          '<div class="guest-edit-row">' +
+            '<input class="guest-edit-input edit-name" type="text" value="' + escHtml(ospite.name) + '" placeholder="Nome e cognome">' +
+            '<input class="guest-edit-input edit-phone" type="tel" value="' + escHtml(ospite.phone || '') + '" placeholder="Telefono">' +
+          '</div>' +
+          '<button class="guest-edit-btn save-icon" title="Salva">✔</button>' +
+          '<button class="guest-edit-btn cancel-icon" title="Annulla">✕</button>';
 
-    li.querySelector('.edit-icon').addEventListener('click', function(){ editingGuestIndex = index; renderOspiti(); });
+        var nameInput = li.querySelector('.edit-name');
+        var phoneInput = li.querySelector('.edit-phone');
 
-    li.querySelector('.guest-del-btn').addEventListener('click', function(){
-      if (!confirm('Rimuovere ' + ospite.name + '?')) return;
-      state.tavoli.forEach(function(t){ var idx = (t.guests || []).indexOf(ospite.name); if (idx !== -1) t.guests.splice(idx, 1); });
-      state.ospiti = state.ospiti.filter(function(o){ return o.name !== ospite.name; });
-      markDirty();
-      renderOspiti();
-      renderTavoliAdmin();
+        function commitEdit() {
+          var newName = nameInput.value.trim();
+          var newPhone = normalizePhone(phoneInput.value.trim());
+          if (!newName) { alert('Il nome non può essere vuoto.'); return; }
+          var oldName = ospite.name;
+          updateGuestNameEverywhere(oldName, newName);
+          ospite.name = newName;
+          ospite.phone = newPhone;
+          editingGuestIndex = null;
+          markDirty();
+          renderOspiti();
+          renderTavoliAdmin();
+        }
+
+        li.querySelector('.save-icon').addEventListener('click', commitEdit);
+        li.querySelector('.cancel-icon').addEventListener('click', function(){ editingGuestIndex = null; renderOspiti(); });
+        nameInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { editingGuestIndex = null; renderOspiti(); } });
+        phoneInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { editingGuestIndex = null; renderOspiti(); } });
+
+        ul.appendChild(li);
+        nameInput.focus();
+        return;
+      }
+
+      var whatsappLink = buildWhatsappLink(ospite, tavoloAssegnato ? ('sei al ' + tavoloAssegnato.name) : '');
+      var waClass = ospite.phone ? '' : ' disabled';
+      var waTitle = ospite.phone ? 'Scrivi su WhatsApp' : 'Numero non impostato';
+
+      li.innerHTML =
+        '<div class="guest-item-main">' +
+          '<span class="guest-item-name">' + escHtml(ospite.name) + '</span>' +
+          (ospite.phone ? '<span class="guest-item-phone">📞 +' + escHtml(ospite.phone) + '</span>' : '') +
+        '</div>' +
+        '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' + (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.name) : 'Non assegnato') + '</span>' +
+        '<a class="guest-whatsapp' + waClass + '" href="' + whatsappLink + '" target="_blank" rel="noopener" title="' + waTitle + '">' + whatsappIconSvg + '</a>' +
+        '<button class="guest-edit-btn edit-icon" title="Modifica ospite">✎</button>' +
+        '<button class="guest-del-btn" title="Rimuovi ospite">✕</button>';
+
+      li.querySelector('.edit-icon').addEventListener('click', function(){ editingGuestIndex = index; renderOspiti(); });
+
+      li.querySelector('.guest-del-btn').addEventListener('click', function(){
+        if (!confirm('Rimuovere ' + ospite.name + '?')) return;
+        state.tavoli.forEach(function(t){ var idx = (t.guests || []).indexOf(ospite.name); if (idx !== -1) t.guests.splice(idx, 1); });
+        state.ospiti = state.ospiti.filter(function(o){ return o.name !== ospite.name; });
+        markDirty();
+        renderOspiti();
+        renderTavoliAdmin();
+      });
+
+      ul.appendChild(li);
     });
-
-    ul.appendChild(li);
-  });
-}
+  }
 
   function renderTavoliAdmin() {
     var container = document.getElementById('tavoli-admin-list'); container.innerHTML = '';
