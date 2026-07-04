@@ -9,23 +9,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--aqua-deep); padding: 24px; }
-    .login-card { background: var(--white); border-radius: 20px; padding: 40px 32px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; }
-    .login-icon { font-size: 48px; margin-bottom: 16px; }
+    .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 30% 20%, var(--aqua-mid) 0%, var(--aqua-deep) 70%); padding: 24px; }
+    .login-card { position: relative; background: var(--white); border-radius: 22px; padding: 44px 32px; width: 100%; max-width: 380px; box-shadow: 0 24px 70px rgba(0,0,0,0.35); text-align: center; overflow: hidden; }
+    .login-card::before { content: ""; position: absolute; inset: 0; border-radius: 22px; padding: 1px; background: linear-gradient(135deg, rgba(200,168,75,.6), rgba(255,255,255,0) 45%, rgba(200,168,75,.35)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+    .login-icon { font-size: 48px; margin-bottom: 16px; animation: floatIcon 3s ease-in-out infinite; }
+    @keyframes floatIcon { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
     .login-title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; font-style: italic; color: var(--aqua-deep); margin-bottom: 6px; }
     .login-sub { font-family: var(--font-body); font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--aqua-light); margin-bottom: 28px; }
-    .login-field { width: 100%; font-family: var(--font-body); font-size: 15px; color: var(--text-dark); background: var(--aqua-mist); border: 2px solid var(--aqua-foam); border-radius: 12px; padding: 14px 18px; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
-    .login-field:focus { border-color: var(--aqua-light); }
-    .login-btn { width: 100%; font-family: var(--font-body); font-size: 14px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-dark); background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 12px; padding: 16px; cursor: pointer; box-shadow: 0 4px 16px rgba(200,168,75,0.35); transition: transform 0.15s; }
+    .login-field { width: 100%; font-family: var(--font-body); font-size: 15px; color: var(--text-dark); background: var(--aqua-mist); border: 2px solid var(--aqua-foam); border-radius: 12px; padding: 14px 18px; outline: none; margin-bottom: 12px; transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; }
+    .login-field:focus { border-color: var(--aqua-light); box-shadow: 0 0 0 4px rgba(10,79,92,0.08); }
+    .login-btn { width: 100%; font-family: var(--font-body); font-size: 14px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-dark); background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 12px; padding: 16px; cursor: pointer; box-shadow: 0 4px 16px rgba(200,168,75,0.35); transition: transform 0.15s; position: relative; overflow: hidden; }
+    .login-btn::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.5) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); }
     .login-btn:active { transform: scale(0.98); }
     .login-error { font-family: var(--font-body); font-size: 12px; color: #c62828; margin-top: 10px; display: none; }
     .login-error.visible { display: block; }
     .admin-panel { display: none; }
     .admin-panel.visible { display: block; }
-    .admin-header { background: linear-gradient(135deg, var(--aqua-deep), var(--aqua-mid)); padding: 32px 28px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .admin-header-title { font-family: var(--font-display); font-size: clamp(1.5rem, 6vw, 2rem); font-weight: 600; font-style: italic; color: var(--white); }
-    .admin-header-sub { font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--aqua-pale); margin-top: 2px; }
-    .logout-btn { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--text-dark); background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 50px; padding: 10px 20px; cursor: pointer; }
+    .admin-header { position: relative; background: linear-gradient(135deg, var(--aqua-deep), var(--aqua-mid)); padding: 32px 28px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; overflow: hidden; }
+    .admin-header::after { content: ""; position: absolute; top: -40%; right: -10%; width: 220px; height: 220px; background: radial-gradient(circle, rgba(200,168,75,.25) 0%, rgba(200,168,75,0) 70%); pointer-events: none; }
+    .admin-header-title { font-family: var(--font-display); font-size: clamp(1.5rem, 6vw, 2rem); font-weight: 600; font-style: italic; color: var(--white); position: relative; }
+    .admin-header-sub { font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--aqua-pale); margin-top: 2px; position: relative; }
+    .logout-btn { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--text-dark); background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 50px; padding: 10px 20px; cursor: pointer; box-shadow: 0 3px 10px rgba(200,168,75,.35); transition: transform .15s; position: relative; }
+    .logout-btn:hover { transform: translateY(-1px); }
     .admin-tabs { display: flex; background: var(--aqua-mist); border-bottom: 2px solid var(--aqua-foam); }
     .admin-tab { flex: 1; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua-light); background: none; border: none; padding: 16px 8px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
     .admin-tab.active { color: var(--aqua-deep); border-bottom-color: var(--gold); }
@@ -34,22 +39,30 @@
     .ospiti-section { padding: 24px 20px; }
     .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
     .section-head-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--aqua-deep); }
-    .add-btn { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--white); background: var(--aqua-mid); border: none; border-radius: 50px; padding: 10px 18px; cursor: pointer; transition: background 0.2s; }
-    .add-btn:hover { background: var(--aqua-deep); }
+    .add-btn { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--white); background: var(--aqua-mid); border: none; border-radius: 50px; padding: 10px 18px; cursor: pointer; transition: background 0.2s, transform .15s; box-shadow: 0 3px 10px rgba(10,79,92,.2); }
+    .add-btn:hover { background: var(--aqua-deep); transform: translateY(-1px); }
     .add-guest-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-    .guest-input { flex: 1; min-width: 120px; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--aqua-mist); border: 2px solid var(--aqua-foam); border-radius: 10px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
-    .guest-input:focus { border-color: var(--aqua-light); }
+    .guest-input { flex: 1; min-width: 120px; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--aqua-mist); border: 2px solid var(--aqua-foam); border-radius: 10px; padding: 11px 14px; outline: none; transition: border-color 0.2s, box-shadow .2s; box-sizing: border-box; }
+    .guest-input:focus { border-color: var(--aqua-light); box-shadow: 0 0 0 3px rgba(10,79,92,0.08); }
     .guest-list { list-style: none; padding: 0; margin: 0; }
-    .guest-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin-bottom: 6px; background: var(--white); border-radius: 10px; border: 1px solid var(--aqua-foam); box-shadow: 0 1px 4px rgba(10,79,92,0.05); }
-    .guest-item-name { flex: 1; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--aqua-deep); }
+    .guest-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin-bottom: 6px; background: var(--white); border-radius: 12px; border: 1px solid var(--aqua-foam); box-shadow: 0 2px 8px rgba(10,79,92,0.06); transition: transform .15s, box-shadow .15s; }
+    .guest-item:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(10,79,92,0.1); }
+    .guest-item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .guest-item-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--aqua-deep); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .guest-item-phone { font-family: var(--font-body); font-size: 10.5px; color: #8ab0b8; }
     .guest-item-badge { font-family: var(--font-body); font-size: 10px; font-weight: 600; color: var(--white); background: var(--aqua-mid); border-radius: 50px; padding: 3px 10px; white-space: nowrap; }
     .guest-item-badge.unassigned { background: #bdbdbd; }
+    .guest-whatsapp { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#25D366,#1ebe5b); flex-shrink: 0; box-shadow: 0 3px 10px rgba(37,211,102,.35); transition: transform .15s ease; text-decoration: none; }
+    .guest-whatsapp:hover { transform: scale(1.08); }
+    .guest-whatsapp svg { width: 15px; height: 15px; fill: #fff; }
+    .guest-whatsapp.disabled { background: #cfd8dc; pointer-events: none; box-shadow: none; }
     .guest-del-btn { background: none; border: none; color: #ef9a9a; font-size: 16px; cursor: pointer; padding: 4px; line-height: 1; border-radius: 6px; transition: color 0.15s; }
     .guest-del-btn:hover { color: #c62828; }
     .tavoli-admin-section { padding: 20px; }
-    .tavolo-admin-card { background: var(--white); border-radius: 16px; border: 1px solid var(--aqua-foam); box-shadow: 0 2px 8px rgba(10,79,92,0.06); margin-bottom: 14px; overflow: hidden; }
+    .tavolo-admin-card { background: var(--white); border-radius: 16px; border: 1px solid var(--aqua-foam); box-shadow: 0 2px 8px rgba(10,79,92,0.06); margin-bottom: 14px; overflow: hidden; transition: box-shadow .2s; }
+    .tavolo-admin-card:hover { box-shadow: 0 8px 22px rgba(10,79,92,0.1); }
     .tavolo-admin-header { display: flex; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; user-select: none; background: var(--aqua-mist); border-bottom: 1px solid var(--aqua-foam); }
-    .tavolo-admin-number { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text-dark); flex-shrink: 0; }
+    .tavolo-admin-number { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text-dark); flex-shrink: 0; box-shadow: 0 3px 10px rgba(200,168,75,.3); }
     .tavolo-admin-name-wrap { flex: 1; }
     .tavolo-admin-name-input { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--aqua-deep); background: transparent; border: none; border-bottom: 2px solid transparent; outline: none; width: 100%; padding: 2px 0; transition: border-color 0.2s; }
     .tavolo-admin-name-input:focus { border-bottom-color: var(--gold); }
@@ -61,16 +74,17 @@
     .drop-zone { min-height: 60px; border: 2px dashed var(--aqua-foam); border-radius: 12px; padding: 10px; margin-bottom: 12px; transition: border-color 0.2s, background 0.2s; }
     .drop-zone.dragover { border-color: var(--aqua-light); background: var(--aqua-mist); }
     .drop-zone-hint { font-family: var(--font-body); font-size: 11px; color: #b0cdd3; text-align: center; padding: 8px; pointer-events: none; }
-    .assigned-guest { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; background: var(--aqua-mist); border-radius: 10px; border: 1px solid var(--aqua-foam); cursor: grab; }
+    .assigned-guest { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; background: var(--aqua-mist); border-radius: 10px; border: 1px solid var(--aqua-foam); cursor: grab; transition: transform .15s; }
+    .assigned-guest:hover { transform: translateX(2px); }
     .assigned-guest:active { cursor: grabbing; }
-    .assigned-guest-name { flex: 1; font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--aqua-deep); }
+    .assigned-guest-name { flex: 1; font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--aqua-deep); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .unassign-btn { background: none; border: none; color: #ef9a9a; font-size: 14px; cursor: pointer; padding: 3px; border-radius: 4px; }
     .unassign-btn:hover { color: #c62828; }
-    .assign-select { width: 100%; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--aqua-mist); border: 2px solid var(--aqua-foam); border-radius: 10px; padding: 10px 14px; outline: none; margin-bottom: 8px; }
+    .assign-select { width: 100%; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--aqua-mist); border: 2px solid var(--aqua-foam); border-radius: 10px; padding: 10px 14px; outline: none; margin-bottom: 8px; box-sizing: border-box; }
     .assign-select:focus { border-color: var(--aqua-light); }
     .assign-confirm-btn { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--white); background: var(--aqua-mid); border: none; border-radius: 50px; padding: 10px 18px; cursor: pointer; width: 100%; transition: background 0.2s; }
     .assign-confirm-btn:hover { background: var(--aqua-deep); }
-    .save-bar { position: sticky; bottom: 0; background: var(--aqua-deep); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
+    .save-bar { position: sticky; bottom: 0; background: var(--aqua-deep); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; box-shadow: 0 -4px 16px rgba(0,0,0,.15); }
     .save-status { font-family: var(--font-body); font-size: 12px; color: rgba(255,255,255,0.6); }
     .save-btn { font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--text-dark); background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 50px; padding: 12px 28px; cursor: pointer; box-shadow: 0 4px 14px rgba(200,168,75,0.35); transition: transform 0.15s; }
     .save-btn:active { transform: scale(0.97); }
@@ -81,10 +95,13 @@
     .settings-input:focus { border-color: var(--aqua-light); }
     .apply-settings-btn { width: 100%; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--white); background: var(--aqua-mid); border: none; border-radius: 12px; padding: 14px; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
     .apply-settings-btn:hover { background: var(--aqua-deep); }
-    .danger-btn { width: 100%; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--white); background: #e53935; border: none; border-radius: 12px; padding: 14px; cursor: pointer; margin-top: 8px; }
+    .danger-btn { width: 100%; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--white); background: #e53935; border: none; border-radius: 12px; padding: 14px; cursor: pointer; margin-top: 8px; transition: transform .15s; }
+    .danger-btn:hover { transform: translateY(-1px); }
   </style>
 </head>
 <body>
+<div id="site-header"></div>
+
 <div class="admin-login" id="admin-login">
   <div class="login-card">
     <div class="login-icon">🔐</div>
@@ -94,10 +111,11 @@
     <button class="login-btn" id="login-btn">Accedi</button>
     <div class="login-error" id="login-error">❌ Password errata</div>
     <div style="margin-top:20px;">
-      <a href="tavoli.html" style="font-family:'Montserrat',sans-serif;font-size:11px;color:#8ab0b8;text-decoration:none;">← Torna alla pagina ospiti</a>
+      <a href="../tavoli.html" style="font-family:'Montserrat',sans-serif;font-size:11px;color:#8ab0b8;text-decoration:none;">← Torna alla pagina ospiti</a>
     </div>
   </div>
 </div>
+
 <div class="admin-panel" id="admin-panel">
   <div class="admin-header">
     <div>
@@ -106,23 +124,28 @@
     </div>
     <button class="logout-btn" id="logout-btn">🚪 Esci</button>
   </div>
+
   <div class="admin-tabs">
     <button class="admin-tab active" data-tab="ospiti">👥 Ospiti</button>
     <button class="admin-tab" data-tab="tavoli">🪑 Tavoli</button>
     <button class="admin-tab" data-tab="impostazioni">⚙️ Config</button>
   </div>
+
   <div class="tab-content active" id="tab-ospiti">
     <div class="ospiti-section">
       <div class="section-head"><div class="section-head-title">Lista Ospiti</div></div>
       <div class="add-guest-row">
         <input class="guest-input" id="input-nome" type="text" placeholder="Nome" autocomplete="off">
         <input class="guest-input" id="input-cognome" type="text" placeholder="Cognome" autocomplete="off">
+        <input class="guest-input" id="input-telefono" type="tel" placeholder="Telefono (es. 393401234567)" autocomplete="off">
         <button class="add-btn" id="add-guest-btn">+ Aggiungi</button>
       </div>
       <ul class="guest-list" id="guest-list"></ul>
     </div>
   </div>
+
   <div class="tab-content" id="tab-tavoli"><div class="tavoli-admin-section" id="tavoli-admin-list"></div></div>
+
   <div class="tab-content" id="tab-impostazioni">
     <div class="settings-section">
       <div class="section-head"><div class="section-head-title">Configurazione</div></div>
@@ -132,88 +155,403 @@
       <button class="danger-btn" id="reset-btn">🗑 Reset completo (cancella tutto)</button>
     </div>
   </div>
+
   <div class="save-bar">
     <div class="save-status" id="save-status">Modifiche non salvate</div>
     <button class="save-btn" id="save-btn">💾 Salva tutto</button>
   </div>
 </div>
+
+<div id="site-footer-slot"></div>
+
 <script src="../matrimonio-db.js"></script>
 <script>
   var ADMIN_PWD = 'admin2026';
   var state = { tavoli: [], ospiti: [], seatsPerTable: 10 };
   var dirty = false;
   var dbLoaded = false;
+
   function escHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
+
+  function normalizePhone(phone) {
+    var p = String(phone || '').trim();
+    if (!p) return '';
+    p = p.replace(/[^\d+]/g, '');
+    if (p.indexOf('+') === 0) p = p.substring(1);
+    return p;
+  }
+
+  function findGuestByName(name) {
+    return state.ospiti.find(function(o) { return o.name === name; });
+  }
+
+  function getGuestNames() {
+    return state.ospiti.map(function(o) { return o.name; });
+  }
+
+  function buildWhatsappLink(ospite, contesto) {
+    var phone = ospite && ospite.phone ? ospite.phone : '';
+    var msg = encodeURIComponent('Ciao ' + (ospite ? ospite.name : '') + '! 💍 Ti scrivo per il matrimonio del 26 Luglio 2026' + (contesto ? ' — ' + contesto : '') + '.');
+    if (phone) return 'https://wa.me/' + phone + '?text=' + msg;
+    return 'https://wa.me/?text=' + msg;
+  }
+
   function setSaveStatus(txt) { document.getElementById('save-status').textContent = txt; }
   function markDirty(txt) { dirty = true; setSaveStatus(txt || '● Modifiche non salvate'); }
-  function initDefault(nTavoli, nPosti) { state.tavoli = []; state.ospiti = []; state.seatsPerTable = nPosti; for (var i = 1; i <= nTavoli; i++) state.tavoli.push({ id: i, name: 'Tavolo ' + i, guests: [] }); }
+
+  function initDefault(nTavoli, nPosti) {
+    state.tavoli = [];
+    state.ospiti = [];
+    state.seatsPerTable = nPosti;
+    for (var i = 1; i <= nTavoli; i++) state.tavoli.push({ id: i, name: 'Tavolo ' + i, guests: [] });
+  }
+
   function normalizeDb(db) { return MatrimonioDB.normalizeDb ? MatrimonioDB.normalizeDb(db) : db; }
+
   function loadData() {
     return MatrimonioDB.loadDB().then(function(db) {
       db = normalizeDb(JSON.parse(JSON.stringify(db || {})));
-      if (!db.tables || !db.tables.items || db.tables.items.length === 0) initDefault(15, 10); else { state.tavoli = db.tables.items; state.ospiti = db.guests || []; state.seatsPerTable = db.tables.seatsPerTable || 10; }
+      if (!db.tables || !db.tables.items || db.tables.items.length === 0) {
+        initDefault(15, 10);
+      } else {
+        state.tavoli = db.tables.items;
+        state.ospiti = (db.guests || []).map(function(g) {
+          if (typeof g === 'string') return { name: g, phone: '' };
+          return { name: g.name || g.nome || '', phone: normalizePhone(g.phone || g.telefono || '') };
+        }).filter(function(g) { return g.name; });
+        state.seatsPerTable = db.tables.seatsPerTable || 10;
+      }
       document.getElementById('set-tavoli').value = state.tavoli.length || 15;
       document.getElementById('set-posti').value = state.seatsPerTable || 10;
-      dbLoaded = true; return db;
-    }).catch(function() { initDefault(15, 10); document.getElementById('set-tavoli').value = 15; document.getElementById('set-posti').value = 10; dbLoaded = true; });
+      dbLoaded = true;
+      return db;
+    }).catch(function() {
+      initDefault(15, 10);
+      document.getElementById('set-tavoli').value = 15;
+      document.getElementById('set-posti').value = 10;
+      dbLoaded = true;
+    });
   }
-  function buildDbFromState(baseDb) { var db = normalizeDb(JSON.parse(JSON.stringify(baseDb || {}))); if (!db.tables) db.tables = {}; db.tables.items = JSON.parse(JSON.stringify(state.tavoli)); db.tables.count = state.tavoli.length; db.tables.seatsPerTable = state.seatsPerTable; db.guests = JSON.parse(JSON.stringify(state.ospiti)); return db; }
-  function getFreeOspiti() { var assigned = []; state.tavoli.forEach(function(t){ (t.guests || []).forEach(function(p){ if (p) assigned.push(p); }); }); return state.ospiti.filter(function(o){ return assigned.indexOf(o) === -1; }); }
+
+  function buildDbFromState(baseDb) {
+    var db = normalizeDb(JSON.parse(JSON.stringify(baseDb || {})));
+    if (!db.tables) db.tables = {};
+    db.tables.items = JSON.parse(JSON.stringify(state.tavoli));
+    db.tables.count = state.tavoli.length;
+    db.tables.seatsPerTable = state.seatsPerTable;
+    db.guests = JSON.parse(JSON.stringify(state.ospiti));
+    return db;
+  }
+
+  function getFreeOspiti() {
+    var assigned = [];
+    state.tavoli.forEach(function(t){ (t.guests || []).forEach(function(p){ if (p) assigned.push(p); }); });
+    return state.ospiti.filter(function(o){ return assigned.indexOf(o.name) === -1; });
+  }
+
   function renderAll() { renderOspiti(); renderTavoliAdmin(); }
+
+  var whatsappIconSvg = '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.7.44 3.36 1.28 4.83L2 22l5.4-1.42a9.87 9.87 0 0 0 4.64 1.18h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.83c0 4.55-3.7 8.25-8.26 8.25a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.56 3.71-8.25 8.25-8.25M8.53 6.98c-.17 0-.45.06-.68.32-.23.25-.9.87-.9 2.13 0 1.25.92 2.46 1.05 2.63.13.17 1.8 2.87 4.45 3.9 2.2.86 2.65.69 3.13.65.47-.04 1.52-.62 1.74-1.22.21-.6.21-1.11.15-1.22-.06-.1-.23-.17-.48-.3-.25-.12-1.52-.75-1.75-.84-.24-.08-.41-.12-.58.13-.17.25-.66.83-.81 1-.15.17-.3.19-.55.06-.25-.12-1.06-.39-2.02-1.24-.75-.66-1.25-1.48-1.4-1.73-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.24-.42.08-.17.04-.31-.02-.44-.06-.12-.58-1.42-.8-1.94-.2-.5-.42-.44-.58-.44h-.5" /></svg>';
+
   function renderOspiti() {
     var ul = document.getElementById('guest-list'); ul.innerHTML = '';
-    if (state.ospiti.length === 0) { ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome e cognome qui sopra.</li>'; return; }
+    if (state.ospiti.length === 0) {
+      ul.innerHTML = '<li style="text-align:center;padding:24px;font-family:Montserrat,sans-serif;font-size:12px;color:#b0cdd3;">Nessun ospite aggiunto. Inizia aggiungendo nome, cognome e telefono qui sopra.</li>';
+      return;
+    }
     state.ospiti.forEach(function(ospite){
       var li = document.createElement('li'); li.className = 'guest-item';
-      var tavoloAssegnato = null; state.tavoli.forEach(function(t){ if ((t.guests || []).indexOf(ospite) !== -1) tavoloAssegnato = t; });
-      li.innerHTML = '<span class="guest-item-name">' + escHtml(ospite) + '</span>' + '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' + (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.name) : 'Non assegnato') + '</span>' + '<button class="guest-del-btn" title="Rimuovi ospite">✕</button>';
-      li.querySelector('.guest-del-btn').addEventListener('click', function(){ if (!confirm('Rimuovere ' + ospite + '?')) return; state.tavoli.forEach(function(t){ var idx = (t.guests || []).indexOf(ospite); if (idx !== -1) t.guests.splice(idx, 1); }); state.ospiti = state.ospiti.filter(function(o){ return o !== ospite; }); markDirty(); renderOspiti(); renderTavoliAdmin(); });
+      var tavoloAssegnato = null;
+      state.tavoli.forEach(function(t){ if ((t.guests || []).indexOf(ospite.name) !== -1) tavoloAssegnato = t; });
+
+      var whatsappLink = buildWhatsappLink(ospite, tavoloAssegnato ? ('sei al ' + tavoloAssegnato.name) : '');
+      var waClass = ospite.phone ? '' : ' disabled';
+      var waTitle = ospite.phone ? 'Scrivi su WhatsApp' : 'Numero non impostato';
+
+      li.innerHTML =
+        '<div class="guest-item-main">' +
+          '<span class="guest-item-name">' + escHtml(ospite.name) + '</span>' +
+          (ospite.phone ? '<span class="guest-item-phone">📞 +' + escHtml(ospite.phone) + '</span>' : '') +
+        '</div>' +
+        '<span class="guest-item-badge ' + (tavoloAssegnato ? '' : 'unassigned') + '">' + (tavoloAssegnato ? '🪑 ' + escHtml(tavoloAssegnato.name) : 'Non assegnato') + '</span>' +
+        '<a class="guest-whatsapp' + waClass + '" href="' + whatsappLink + '" target="_blank" rel="noopener" title="' + waTitle + '">' + whatsappIconSvg + '</a>' +
+        '<button class="guest-del-btn" title="Rimuovi ospite">✕</button>';
+
+      li.querySelector('.guest-del-btn').addEventListener('click', function(){
+        if (!confirm('Rimuovere ' + ospite.name + '?')) return;
+        state.tavoli.forEach(function(t){ var idx = (t.guests || []).indexOf(ospite.name); if (idx !== -1) t.guests.splice(idx, 1); });
+        state.ospiti = state.ospiti.filter(function(o){ return o.name !== ospite.name; });
+        markDirty();
+        renderOspiti();
+        renderTavoliAdmin();
+      });
+
       ul.appendChild(li);
     });
   }
+
   function renderTavoliAdmin() {
     var container = document.getElementById('tavoli-admin-list'); container.innerHTML = '';
     state.tavoli.forEach(function(tavolo){
-      if (!tavolo.guests) tavolo.guests = []; if (!tavolo.name) tavolo.name = 'Tavolo ' + tavolo.id;
+      if (!tavolo.guests) tavolo.guests = [];
+      if (!tavolo.name) tavolo.name = 'Tavolo ' + tavolo.id;
+
       var card = document.createElement('div'); card.className = 'tavolo-admin-card'; card.dataset.id = tavolo.id;
-      var header = document.createElement('div'); header.className = 'tavolo-admin-header'; header.innerHTML = '<div class="tavolo-admin-number">' + tavolo.id + '</div>' + '<div class="tavolo-admin-name-wrap">' + '<input class="tavolo-admin-name-input" type="text" value="' + escHtml(tavolo.name) + '" placeholder="Nome tavolo">' + '<div class="tavolo-admin-count">' + tavolo.guests.length + ' / ' + state.seatsPerTable + ' posti</div>' + '</div>' + '<span class="tavolo-toggle">▾</span>';
-      header.querySelector('.tavolo-admin-name-input').addEventListener('change', function(e){ tavolo.name = e.target.value.trim() || ('Tavolo ' + tavolo.id); markDirty(); renderOspiti(); });
+
+      var header = document.createElement('div'); header.className = 'tavolo-admin-header';
+      header.innerHTML =
+        '<div class="tavolo-admin-number">' + tavolo.id + '</div>' +
+        '<div class="tavolo-admin-name-wrap">' +
+          '<input class="tavolo-admin-name-input" type="text" value="' + escHtml(tavolo.name) + '" placeholder="Nome tavolo">' +
+          '<div class="tavolo-admin-count">' + tavolo.guests.length + ' / ' + state.seatsPerTable + ' posti</div>' +
+        '</div>' +
+        '<span class="tavolo-toggle">▾</span>';
+
+      header.querySelector('.tavolo-admin-name-input').addEventListener('change', function(e){
+        tavolo.name = e.target.value.trim() || ('Tavolo ' + tavolo.id);
+        markDirty();
+        renderOspiti();
+      });
       header.querySelector('.tavolo-admin-name-input').addEventListener('click', function(e){ e.stopPropagation(); });
       header.addEventListener('click', function(){ card.classList.toggle('open'); });
+
       var body = document.createElement('div'); body.className = 'tavolo-admin-body';
       var dropZone = document.createElement('div'); dropZone.className = 'drop-zone';
-      if (tavolo.guests.length === 0) { dropZone.innerHTML = '<div class="drop-zone-hint">Nessun ospite assegnato a questo tavolo</div>'; } else {
-        tavolo.guests.forEach(function(nome){ if (!nome || !nome.trim()) return; var ag = document.createElement('div'); ag.className = 'assigned-guest'; ag.innerHTML = '<span class="assigned-guest-name">' + escHtml(nome) + '</span>' + '<button class="unassign-btn" title="Rimuovi dal tavolo">✕</button>'; ag.querySelector('.unassign-btn').addEventListener('click', function(){ var idx = tavolo.guests.indexOf(nome); if (idx !== -1) tavolo.guests.splice(idx, 1); markDirty(); renderTavoliAdmin(); renderOspiti(); }); dropZone.appendChild(ag); });
+
+      if (tavolo.guests.length === 0) {
+        dropZone.innerHTML = '<div class="drop-zone-hint">Nessun ospite assegnato a questo tavolo</div>';
+      } else {
+        tavolo.guests.forEach(function(nome){
+          if (!nome || !nome.trim()) return;
+          var ospiteObj = findGuestByName(nome);
+          var waLink = buildWhatsappLink(ospiteObj || { name: nome, phone: '' }, 'sei al ' + tavolo.name);
+          var waClass = (ospiteObj && ospiteObj.phone) ? '' : ' disabled';
+
+          var ag = document.createElement('div'); ag.className = 'assigned-guest';
+          ag.innerHTML =
+            '<span class="assigned-guest-name">' + escHtml(nome) + '</span>' +
+            '<a class="guest-whatsapp' + waClass + '" style="width:26px;height:26px;" href="' + waLink + '" target="_blank" rel="noopener" title="Scrivi su WhatsApp">' + whatsappIconSvg + '</a>' +
+            '<button class="unassign-btn" title="Rimuovi dal tavolo">✕</button>';
+
+          ag.querySelector('.unassign-btn').addEventListener('click', function(){
+            var idx = tavolo.guests.indexOf(nome);
+            if (idx !== -1) tavolo.guests.splice(idx, 1);
+            markDirty();
+            renderTavoliAdmin();
+            renderOspiti();
+          });
+
+          dropZone.appendChild(ag);
+        });
       }
+
       var freeOspiti = getFreeOspiti();
+
       if (freeOspiti.length > 0 && tavolo.guests.length < state.seatsPerTable) {
-        var sel = document.createElement('select'); sel.className = 'assign-select'; sel.innerHTML = '<option value="">-- Seleziona ospite da assegnare --</option>'; freeOspiti.forEach(function(o){ var opt = document.createElement('option'); opt.value = o; opt.textContent = o; sel.appendChild(opt); });
-        var assignBtn = document.createElement('button'); assignBtn.className = 'assign-confirm-btn'; assignBtn.textContent = '+ Assegna al tavolo'; assignBtn.addEventListener('click', function(){ var val = sel.value; if (!val) return; if (tavolo.guests.length >= state.seatsPerTable) { alert('Tavolo pieno! Massimo ' + state.seatsPerTable + ' posti.'); return; } tavolo.guests.push(val); markDirty(); renderTavoliAdmin(); renderOspiti(); });
-        body.appendChild(dropZone); body.appendChild(sel); body.appendChild(assignBtn);
-      } else { body.appendChild(dropZone); if (tavolo.guests.length >= state.seatsPerTable) { var fullMsg = document.createElement('div'); fullMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;'; fullMsg.textContent = '✅ Tavolo completo'; body.appendChild(fullMsg); } else if (freeOspiti.length === 0) { var noGuestMsg = document.createElement('div'); noGuestMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;'; noGuestMsg.textContent = 'Tutti gli ospiti sono già assegnati'; body.appendChild(noGuestMsg); } }
-      card.appendChild(header); card.appendChild(body); container.appendChild(card);
+        var sel = document.createElement('select'); sel.className = 'assign-select';
+        sel.innerHTML = '<option value="">-- Seleziona ospite da assegnare --</option>';
+        freeOspiti.forEach(function(o){
+          var opt = document.createElement('option');
+          opt.value = o.name;
+          opt.textContent = o.name;
+          sel.appendChild(opt);
+        });
+
+        var assignBtn = document.createElement('button'); assignBtn.className = 'assign-confirm-btn'; assignBtn.textContent = '+ Assegna al tavolo';
+        assignBtn.addEventListener('click', function(){
+          var val = sel.value;
+          if (!val) return;
+          if (tavolo.guests.length >= state.seatsPerTable) { alert('Tavolo pieno! Massimo ' + state.seatsPerTable + ' posti.'); return; }
+          tavolo.guests.push(val);
+          markDirty();
+          renderTavoliAdmin();
+          renderOspiti();
+        });
+
+        body.appendChild(dropZone);
+        body.appendChild(sel);
+        body.appendChild(assignBtn);
+      } else {
+        body.appendChild(dropZone);
+        if (tavolo.guests.length >= state.seatsPerTable) {
+          var fullMsg = document.createElement('div');
+          fullMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
+          fullMsg.textContent = '✅ Tavolo completo';
+          body.appendChild(fullMsg);
+        } else if (freeOspiti.length === 0) {
+          var noGuestMsg = document.createElement('div');
+          noGuestMsg.style.cssText = 'font-family:Montserrat,sans-serif;font-size:11px;color:#8ab0b8;text-align:center;padding:8px;';
+          noGuestMsg.textContent = 'Tutti gli ospiti sono già assegnati';
+          body.appendChild(noGuestMsg);
+        }
+      }
+
+      card.appendChild(header);
+      card.appendChild(body);
+      container.appendChild(card);
     });
   }
+
   async function addGuest() {
-    var nome = document.getElementById('input-nome').value.trim(); var cognome = document.getElementById('input-cognome').value.trim(); if (!nome && !cognome) return;
-    var fullName = (nome + ' ' + cognome).trim(); //if (state.ospiti.indexOf(fullName) !== -1) { alert('Questo ospite esiste già.'); return; }
-    state.ospiti.push(fullName); document.getElementById('input-nome').value = ''; document.getElementById('input-cognome').value = ''; document.getElementById('input-nome').focus(); renderOspiti(); setSaveStatus('Salvataggio ospite in corso...');
-    try { var db = buildDbFromState({ tables: { items: state.tavoli, seatsPerTable: state.seatsPerTable, count: state.tavoli.length }, guests: state.ospiti }); MatrimonioDB.saveLocalCopy(db); await MatrimonioDB.syncToRemote(db); dirty = false; setSaveStatus('✅ Ospite salvato nel foglio Google'); } catch (err) { console.error(err); markDirty(); setSaveStatus('⚠️ Ospite aggiunto solo localmente'); alert('Ospite aggiunto solo localmente. Controlla Apps Script o connessione.'); }
+    var nome = document.getElementById('input-nome').value.trim();
+    var cognome = document.getElementById('input-cognome').value.trim();
+    var telefono = normalizePhone(document.getElementById('input-telefono').value.trim());
+    if (!nome && !cognome) return;
+
+    var fullName = (nome + ' ' + cognome).trim();
+    state.ospiti.push({ name: fullName, phone: telefono });
+
+    document.getElementById('input-nome').value = '';
+    document.getElementById('input-cognome').value = '';
+    document.getElementById('input-telefono').value = '';
+    document.getElementById('input-nome').focus();
+    renderOspiti();
+    setSaveStatus('Salvataggio ospite in corso...');
+
+    try {
+      var db = buildDbFromState({ tables: { items: state.tavoli, seatsPerTable: state.seatsPerTable, count: state.tavoli.length }, guests: state.ospiti });
+      MatrimonioDB.saveLocalCopy(db);
+      await MatrimonioDB.syncToRemote(db);
+      dirty = false;
+      setSaveStatus('✅ Ospite salvato nel foglio Google');
+    } catch (err) {
+      console.error(err);
+      markDirty();
+      setSaveStatus('⚠️ Ospite aggiunto solo localmente');
+      alert('Ospite aggiunto solo localmente. Controlla Apps Script o connessione.');
+    }
   }
-  function doLogin() { var pwd = document.getElementById('pwd-input').value; if (pwd === ADMIN_PWD) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').classList.add('visible'); loadData().then(function() { renderAll(); setSaveStatus('DB caricato'); }); } else { document.getElementById('login-error').classList.add('visible'); document.getElementById('pwd-input').value = ''; } }
-  async function saveData() { if (!dbLoaded) return Promise.reject(new Error('DB non caricato')); setSaveStatus('Salvataggio su Google Sheet in corso...'); try { var baseDb = await MatrimonioDB.loadDB(); var db = buildDbFromState(baseDb); MatrimonioDB.saveLocalCopy(db); await MatrimonioDB.syncToRemote(db); dirty = false; setSaveStatus('✅ Salvato su Google Sheet'); } catch (err) { console.error(err); setSaveStatus('Errore salvataggio'); alert('Errore durante il salvataggio remoto su Google Sheet.'); } }
+
+  function doLogin() {
+    var pwd = document.getElementById('pwd-input').value;
+    if (pwd === ADMIN_PWD) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-panel').classList.add('visible');
+      loadData().then(function() { renderAll(); setSaveStatus('DB caricato'); });
+    } else {
+      document.getElementById('login-error').classList.add('visible');
+      document.getElementById('pwd-input').value = '';
+    }
+  }
+
+  async function saveData() {
+    if (!dbLoaded) return Promise.reject(new Error('DB non caricato'));
+    setSaveStatus('Salvataggio su Google Sheet in corso...');
+    try {
+      var baseDb = await MatrimonioDB.loadDB();
+      var db = buildDbFromState(baseDb);
+      MatrimonioDB.saveLocalCopy(db);
+      await MatrimonioDB.syncToRemote(db);
+      dirty = false;
+      setSaveStatus('✅ Salvato su Google Sheet');
+    } catch (err) {
+      console.error(err);
+      setSaveStatus('Errore salvataggio');
+      alert('Errore durante il salvataggio remoto su Google Sheet.');
+    }
+  }
+
+  function loadComponent(url, targetId, callback) {
+    fetch(url).then(function(res) { return res.text(); }).then(function(html) {
+      var el = document.getElementById(targetId);
+      if (!el) return;
+      el.innerHTML = html;
+      if (callback) callback();
+    }).catch(function(err) { console.warn('Componente non caricato:', err); });
+  }
+
+  function initNavHamburger() {
+    var btn = document.getElementById('nav-toggle');
+    var menu = document.getElementById('mobile-menu');
+    var overlay = document.getElementById('mobile-overlay');
+    if (!btn || !menu || !overlay) { setTimeout(initNavHamburger, 100); return; }
+
+    function closeMenu() {
+      btn.classList.remove('open');
+      menu.classList.remove('open');
+      overlay.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('menu-open');
+    }
+    function openMenu() {
+      btn.classList.add('open');
+      menu.classList.add('open');
+      overlay.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      menu.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('menu-open');
+    }
+
+    btn.addEventListener('click', function() {
+      if (menu.classList.contains('open')) closeMenu(); else openMenu();
+    });
+    overlay.addEventListener('click', closeMenu);
+    document.querySelectorAll('.mobile-link').forEach(function(a) { a.addEventListener('click', closeMenu); });
+    window.addEventListener('scroll', function() { if (menu.classList.contains('open')) closeMenu(); }, { passive: true });
+    window.addEventListener('resize', function() { if (window.innerWidth > 768) closeMenu(); });
+  }
+
   document.getElementById('login-btn').addEventListener('click', doLogin);
   document.getElementById('pwd-input').addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
-  document.getElementById('logout-btn').addEventListener('click', function(){ document.getElementById('admin-login').style.display = 'flex'; document.getElementById('admin-panel').classList.remove('visible'); document.getElementById('pwd-input').value = ''; });
-  document.querySelectorAll('.admin-tab').forEach(function(tab){ tab.addEventListener('click', function(){ document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); }); document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); }); tab.classList.add('active'); document.getElementById('tab-' + tab.dataset.tab).classList.add('active'); if (tab.dataset.tab === 'tavoli') renderTavoliAdmin(); }); });
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    document.getElementById('admin-login').style.display = 'flex';
+    document.getElementById('admin-panel').classList.remove('visible');
+    document.getElementById('pwd-input').value = '';
+  });
+
+  document.querySelectorAll('.admin-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      if (tab.dataset.tab === 'tavoli') renderTavoliAdmin();
+    });
+  });
+
   document.getElementById('add-guest-btn').addEventListener('click', addGuest);
-  document.getElementById('input-cognome').addEventListener('keydown', function(e){ if (e.key === 'Enter') addGuest(); });
+  document.getElementById('input-telefono').addEventListener('keydown', function(e){ if (e.key === 'Enter') addGuest(); });
   document.getElementById('save-btn').addEventListener('click', function(){ saveData(); });
-  document.getElementById('apply-settings-btn').addEventListener('click', function(){ var nT = parseInt(document.getElementById('set-tavoli').value, 10) || 15; var nP = parseInt(document.getElementById('set-posti').value, 10) || 10; nT = Math.min(Math.max(nT, 1), 30); nP = Math.min(Math.max(nP, 1), 20); state.seatsPerTable = nP; while (state.tavoli.length < nT) { var nextId = state.tavoli.length + 1; state.tavoli.push({ id: nextId, name: 'Tavolo ' + nextId, guests: [] }); } if (state.tavoli.length > nT) { var toRemove = state.tavoli.slice(nT); var hasGuests = toRemove.some(function(t){ return (t.guests || []).length > 0; }); if (hasGuests) { if (!confirm('Alcuni tavoli da rimuovere hanno ospiti assegnati. Continuare? Gli ospiti torneranno non assegnati.')) return; } state.tavoli = state.tavoli.slice(0, nT); } markDirty(); renderAll(); alert('✅ Configurazione applicata: ' + nT + ' tavoli, ' + nP + ' posti per tavolo.'); });
-  document.getElementById('reset-btn').addEventListener('click', function(){ if (!confirm('⚠️ ATTENZIONE: questo cancellerà TUTTI gli ospiti e le assegnazioni. Sei sicuro?')) return; if (!confirm('Ultima conferma: cancellare davvero tutto?')) return; initDefault(15, 10); document.getElementById('set-tavoli').value = 15; document.getElementById('set-posti').value = 10; markDirty(); renderAll(); });
+
+  document.getElementById('apply-settings-btn').addEventListener('click', function(){
+    var nT = parseInt(document.getElementById('set-tavoli').value, 10) || 15;
+    var nP = parseInt(document.getElementById('set-posti').value, 10) || 10;
+    nT = Math.min(Math.max(nT, 1), 30);
+    nP = Math.min(Math.max(nP, 1), 20);
+    state.seatsPerTable = nP;
+
+    while (state.tavoli.length < nT) {
+      var nextId = state.tavoli.length + 1;
+      state.tavoli.push({ id: nextId, name: 'Tavolo ' + nextId, guests: [] });
+    }
+    if (state.tavoli.length > nT) {
+      var toRemove = state.tavoli.slice(nT);
+      var hasGuests = toRemove.some(function(t){ return (t.guests || []).length > 0; });
+      if (hasGuests) {
+        if (!confirm('Alcuni tavoli da rimuovere hanno ospiti assegnati. Continuare? Gli ospiti torneranno non assegnati.')) return;
+      }
+      state.tavoli = state.tavoli.slice(0, nT);
+    }
+    markDirty();
+    renderAll();
+    alert('✅ Configurazione applicata: ' + nT + ' tavoli, ' + nP + ' posti per tavolo.');
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', function(){
+    if (!confirm('⚠️ ATTENZIONE: questo cancellerà TUTTI gli ospiti e le assegnazioni. Sei sicuro?')) return;
+    if (!confirm('Ultima conferma: cancellare davvero tutto?')) return;
+    initDefault(15, 10);
+    document.getElementById('set-tavoli').value = 15;
+    document.getElementById('set-posti').value = 10;
+    markDirty();
+    renderAll();
+  });
+
   window.addEventListener('beforeunload', function(e){ if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
   loadComponent('../components/header.html', 'site-header', initNavHamburger);
-loadComponent('../components/footer.html', 'site-footer-slot', null);
+  loadComponent('../components/footer.html', 'site-footer-slot', null);
 </script>
 </body>
 </html>
