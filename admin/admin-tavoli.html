@@ -58,6 +58,16 @@
     .guest-whatsapp.disabled { background: #cfd8dc; pointer-events: none; box-shadow: none; }
     .guest-del-btn { background: none; border: none; color: #ef9a9a; font-size: 16px; cursor: pointer; padding: 4px; line-height: 1; border-radius: 6px; transition: color 0.15s; }
     .guest-del-btn:hover { color: #c62828; }
+    .guest-edit-row { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.guest-edit-input { flex: 1; min-width: 90px; font-family: var(--font-body); font-size: 13px; color: var(--text-dark); background: var(--white); border: 2px solid var(--aqua-foam); border-radius: 8px; padding: 8px 10px; outline: none; transition: border-color .2s; box-sizing: border-box; }
+.guest-edit-input:focus { border-color: var(--aqua-light); }
+.guest-edit-btn { background: none; border: none; font-size: 15px; cursor: pointer; padding: 5px 7px; border-radius: 6px; transition: background .15s; flex-shrink: 0; }
+.guest-edit-btn.edit-icon { color: var(--aqua-mid); }
+.guest-edit-btn.edit-icon:hover { background: var(--aqua-mist); }
+.guest-edit-btn.save-icon { color: #2e7d32; }
+.guest-edit-btn.save-icon:hover { background: #e8f5e9; }
+.guest-edit-btn.cancel-icon { color: #8ab0b8; }
+.guest-edit-btn.cancel-icon:hover { background: #f0f4f5; }
     .tavoli-admin-section { padding: 20px; }
     .tavolo-admin-card { background: var(--white); border-radius: 16px; border: 1px solid var(--aqua-foam); box-shadow: 0 2px 8px rgba(10,79,92,0.06); margin-bottom: 14px; overflow: hidden; transition: box-shadow .2s; }
     .tavolo-admin-card:hover { box-shadow: 0 8px 22px rgba(10,79,92,0.1); }
@@ -97,6 +107,8 @@
     .apply-settings-btn:hover { background: var(--aqua-deep); }
     .danger-btn { width: 100%; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--white); background: #e53935; border: none; border-radius: 12px; padding: 14px; cursor: pointer; margin-top: 8px; transition: transform .15s; }
     .danger-btn:hover { transform: translateY(-1px); }
+    .guest-item.editing { background: var(--aqua-mist); border-color: var(--aqua-light); }
+
   </style>
 </head>
 <body>
