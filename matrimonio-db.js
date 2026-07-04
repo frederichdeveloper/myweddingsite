@@ -4,8 +4,28 @@
   var dbCache = null;
 
   function normalizeText(s) { return String(s || '').trim(); }
+
+  function normalizePhone(phone) {
+    var p = String(phone || '').trim();
+    if (!p) return '';
+    p = p.replace(/[^\d+]/g, '');
+    if (p.indexOf('+') === 0) p = p.substring(1);
+    return p;
+  }
+
   function isConfiguredUrl() { return !!SCRIPT_URL && SCRIPT_URL.indexOf('IL_TUO_DEPLOY_ID') === -1; }
   function createEmptyDb() { return normalizeDb({ tables: { items: [], seatsPerTable: 10, count: 0 }, guests: [] }); }
+
+  function normalizeGuestEntry(g) {
+    if (typeof g === 'string') return { name: normalizeText(g), phone: '' };
+    if (g && typeof g === 'object') {
+      return {
+        name: normalizeText(g.nome || g.name || ''),
+        phone: normalizePhone(g.phone || g.telefono || g.tel || '')
+      };
+    }
+    return { name: '', phone: '' };
+  }
 
   function normalizeDb(db) {
     if (!db) db = {};
@@ -30,13 +50,21 @@
       }).filter(Boolean);
     });
 
-    db.guests = db.guests.map(function (g) {
-      if (typeof g === 'string') return normalizeText(g);
-      if (g && typeof g === 'object') return normalizeText(g.nome || g.name || '');
-      return '';
-    }).filter(Boolean);
+    db.guests = db.guests.map(normalizeGuestEntry).filter(function (g) { return g.name; });
 
-    db.guests = Array.from(new Set(db.guests));
+    var merged = {};
+    var order = [];
+    db.guests.forEach(function (g) {
+      var key = g.name.toLowerCase();
+      if (!merged[key]) {
+        merged[key] = { name: g.name, phone: g.phone || '' };
+        order.push(key);
+      } else if (!merged[key].phone && g.phone) {
+        merged[key].phone = g.phone;
+      }
+    });
+    db.guests = order.map(function (key) { return merged[key]; });
+
     db.tables.count = db.tables.items.length;
     return db;
   }
@@ -118,7 +146,20 @@
   }
 
   function getAllTables() { return (dbCache && dbCache.tables && Array.isArray(dbCache.tables.items)) ? dbCache.tables.items : []; }
+
   function getGuests() { return (dbCache && Array.isArray(dbCache.guests)) ? dbCache.guests : []; }
+
+  function findGuestByName(guestFullName) {
+    guestFullName = normalizeText(guestFullName).toLowerCase();
+    if (!guestFullName || !dbCache || !Array.isArray(dbCache.guests)) return null;
+    return dbCache.guests.find(function (g) { return g.name.toLowerCase() === guestFullName; }) || null;
+  }
+
+  function getGuestPhone(guestFullName) {
+    var g = findGuestByName(guestFullName);
+    return g ? (g.phone || '') : '';
+  }
+
   function ensureDb() { if (!dbCache) dbCache = createEmptyDb(); return dbCache; }
 
   function removeGuestFromAllTables(guestFullName) {
@@ -131,6 +172,19 @@
       if (idx !== -1) { t.guests.splice(idx, 1); removed = true; }
     });
     return removed;
+  }
+
+  function renameGuestEverywhere(oldName, newName) {
+    oldName = normalizeText(oldName);
+    newName = normalizeText(newName);
+    if (!oldName || !newName || oldName === newName) return false;
+    if (!dbCache || !dbCache.tables || !Array.isArray(dbCache.tables.items)) return false;
+    dbCache.tables.items.forEach(function (t) {
+      if (!Array.isArray(t.guests)) return;
+      var idx = t.guests.indexOf(oldName);
+      if (idx !== -1) t.guests[idx] = newName;
+    });
+    return true;
   }
 
   function isGuestAssigned(guestFullName) {
@@ -151,8 +205,8 @@
     removeGuestFromAllTables(guestFullName);
     t.guests.push(guestFullName);
     if (!Array.isArray(dbCache.guests)) dbCache.guests = [];
-    if (dbCache.guests.indexOf(guestFullName) === -1) dbCache.guests.push(guestFullName);
-    dbCache.guests = Array.from(new Set(dbCache.guests));
+    if (!findGuestByName(guestFullName)) dbCache.guests.push({ name: guestFullName, phone: '' });
+    dbCache = normalizeDb(dbCache);
     saveLocalCopy(dbCache);
     return true;
   }
@@ -166,14 +220,29 @@
     return removed;
   }
 
-  function addGuest(guestFullName) {
+  function addGuest(guestFullName, phone) {
     ensureDb();
     guestFullName = normalizeText(guestFullName);
     if (!guestFullName) return false;
     if (!Array.isArray(dbCache.guests)) dbCache.guests = [];
-    if (dbCache.guests.indexOf(guestFullName) !== -1) return false;
-    dbCache.guests.push(guestFullName);
-    dbCache.guests = Array.from(new Set(dbCache.guests));
+    if (findGuestByName(guestFullName)) return false;
+    dbCache.guests.push({ name: guestFullName, phone: normalizePhone(phone) });
+    dbCache = normalizeDb(dbCache);
+    saveLocalCopy(dbCache);
+    return true;
+  }
+
+  function updateGuest(oldName, newName, phone) {
+    ensureDb();
+    oldName = normalizeText(oldName);
+    newName = normalizeText(newName);
+    if (!oldName || !newName) return false;
+    var g = findGuestByName(oldName);
+    if (!g) return false;
+    renameGuestEverywhere(oldName, newName);
+    g.name = newName;
+    g.phone = normalizePhone(phone);
+    dbCache = normalizeDb(dbCache);
     saveLocalCopy(dbCache);
     return true;
   }
@@ -183,7 +252,7 @@
     if (!Array.isArray(dbCache.guests)) return false;
     guestFullName = normalizeText(guestFullName);
     if (!guestFullName) return false;
-    var idx = dbCache.guests.indexOf(guestFullName);
+    var idx = dbCache.guests.findIndex(function (g) { return g.name.toLowerCase() === guestFullName.toLowerCase(); });
     if (idx === -1) return false;
     dbCache.guests.splice(idx, 1);
     removeGuestFromAllTables(guestFullName);
@@ -235,15 +304,19 @@
     findTableByName: findTableByName,
     getAllTables: getAllTables,
     getGuests: getGuests,
+    findGuestByName: findGuestByName,
+    getGuestPhone: getGuestPhone,
     isGuestAssigned: isGuestAssigned,
     assignGuestToTable: assignGuestToTable,
     unassignGuestFromTable: unassignGuestFromTable,
     addGuest: addGuest,
+    updateGuest: updateGuest,
     removeGuest: removeGuest,
     setSeatsPerTable: setSeatsPerTable,
     setTablesCount: setTablesCount,
     resetDb: resetDb,
     syncToRemote: syncToRemote,
-    normalizeDb: normalizeDb
+    normalizeDb: normalizeDb,
+    normalizePhone: normalizePhone
   };
 })(window);
