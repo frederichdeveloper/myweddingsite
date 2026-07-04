@@ -17,7 +17,22 @@
     .table-visual{padding:24px;display:flex;justify-content:center}.seats-list{padding:0 20px 20px}.seat-item{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-bottom:8px;background:rgba(255,255,255,.08);border-radius:12px;border:1px solid rgba(255,255,255,.1);transition:background .15s}.seat-item.empty{opacity:.4}.seat-number{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--aqua-pale);flex-shrink:0}.seat-item:not(.empty) .seat-number{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--text-dark)}.seat-name{font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--white);line-height:1.2}.seat-empty-label{font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,.4);font-style:italic}
     .empty-state{text-align:center;padding:48px 28px;display:none}.empty-state.visible{display:block}.empty-state-icon{font-size:48px;margin-bottom:16px}.empty-state-title{font-family:var(--font-display);font-size:1.5rem;font-weight:600;color:var(--aqua-deep);margin-bottom:8px}.empty-state-text{font-family:var(--font-body);font-size:13px;color:#5a8a96;line-height:1.6}
     .not-found{background:#fff5f5;border:2px solid #ffcdd2;border-radius:16px;padding:24px;text-align:center;display:none}.not-found.visible{display:block}.not-found-icon{font-size:32px;margin-bottom:8px}.not-found-text{font-family:var(--font-body);font-size:13px;color:#c62828;line-height:1.6}
-    .admin-link-bar{background:var(--aqua-mist);padding:16px 28px;text-align:center;border-top:1px solid var(--aqua-foam)}.admin-link-bar a{font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(10,79,92,.4);text-decoration:none}.admin-link-bar a:hover{color:var(--aqua-mid)}
+    .admin-link-bar{background:var(--aqua-mist);padding:16px 28px;text-align:center;border-top:1px solid var(--aqua-foam)}.admin-link-bar a{font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(10,79,92,.4);text-decoration:none}.admin-link-bar a:hover{color:var(--aqua-mid)}§
+    .table-card{position:relative}
+.table-card::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(135deg,rgba(200,168,75,.5),rgba(255,255,255,0) 40%,rgba(200,168,75,.3));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.table-number-badge{position:relative;animation:badgeGlow 3s ease-in-out infinite}
+@keyframes badgeGlow{0%,100%{box-shadow:0 4px 16px rgba(200,168,75,.4)}50%{box-shadow:0 4px 26px rgba(200,168,75,.7)}}
+.seat-item{position:relative;transition:transform .18s ease,background .18s ease}
+.seat-item:not(.empty):hover{transform:translateX(3px);background:rgba(255,255,255,.13)}
+.seat-item-main{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
+.seat-name-wrap{display:flex;align-items:center;justify-content:space-between;flex:1;gap:10px;min-width:0}
+.seat-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat-whatsapp{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#25D366,#1ebe5b);flex-shrink:0;box-shadow:0 3px 10px rgba(37,211,102,.4);transition:transform .15s ease,box-shadow .15s ease;-webkit-tap-highlight-color:transparent}
+.seat-whatsapp:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(37,211,102,.55)}
+.seat-whatsapp svg{width:16px;height:16px;fill:#fff}
+.search-btn{position:relative;overflow:hidden}
+.search-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg)}
+.quick-btn.active{box-shadow:0 4px 14px rgba(10,79,92,.35)}
   </style>
 </head>
 <body>
