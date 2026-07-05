@@ -217,7 +217,7 @@
 
   function buildWhatsappLink(ospite, contesto) {
     var phone = ospite && ospite.phone ? ospite.phone : '';
-    var msg = encodeURIComponent('Ciao ' + (ospite ? ospite.name : '') + '! 💍 Ti scrivo per il matrimonio del 26 Luglio 2026' + (contesto ? ' — ' + contesto : '') + '.');
+    var msg = encodeURIComponent('Ciao ' + (ospite ? ospite.name : '') + '! ❤️ Ti scrivo per il matrimonio del 26 Luglio 2026 ❤️' + (contesto ? ' — ' + contesto : '') + '.');
     if (phone) return 'https://wa.me/' + phone + '?text=' + msg;
     return 'https://wa.me/?text=' + msg;
   }
@@ -334,7 +334,7 @@
         return;
       }
 
-      var whatsappLink = buildWhatsappLink(ospite, tavoloAssegnato ? ('sei al ' + tavoloAssegnato.name) : '');
+      var whatsappLink = buildWhatsappLink(ospite, tavoloAssegnato ? ('sei al tavolo ' + tavoloAssegnato.name) : '');
       var waClass = ospite.phone ? '' : ' disabled';
       var waTitle = ospite.phone ? 'Scrivi su WhatsApp' : 'Numero non impostato';
 
