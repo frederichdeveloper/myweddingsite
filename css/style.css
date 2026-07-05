@@ -353,6 +353,38 @@ body {
   background: linear-gradient(to bottom, transparent, var(--aqua-mist));
 }
 
+.date-img-wrap {
+  position: relative;
+}
+
+.date-img-link {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  text-align: center;
+}
+
+.date-img-link a {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0a4f5c;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.date-img-link a:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+}
 .gold-line {
   width: 60px;
   height: 2px;
