@@ -8,6 +8,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .drive-view-link-wrap { margin: 22px 0 6px; text-align: center; }
+    .drive-view-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #0a4f5c;
+      background: linear-gradient(135deg, #c8a84b, #e8cc80);
+      border: none;
+      border-radius: 50px;
+      padding: 13px 22px;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(200,168,75,0.35);
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .drive-view-link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(200,168,75,0.45);
+    }
+    .drive-view-link-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .drive-view-link-sub {
+      display: block;
+      margin-top: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      color: #7a8f93;
+    }
+  </style>
 </head>
 <body>
 
@@ -39,6 +71,15 @@
 <br><br>
 <div id="preview-list" class="drive-preview-list"></div>
 
+      <div class="drive-view-link-wrap">
+        <a class="drive-view-link-btn" href="https://drive.google.com/drive/folders/1bvzFAFo0EN0V6AJTeHYPJ9cbxLItVz11?usp=drive_link" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0a4f5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+          </svg>
+          Vedi tutte le foto caricate
+        </a>
+        <span class="drive-view-link-sub">Apre la cartella condivisa su Google Drive</span>
+      </div>
 
       <div id="status-messaggio" class="drive-camera-status" aria-live="polite"></div>
 
